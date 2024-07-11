@@ -16,7 +16,14 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={inter.className}>{children}</body>
+      <body className={inter.className}>
+        {/* add white background with tailwind */}
+        <div className="bg-white">
+          <div className="w-full max-w-md mx-auto">
+            {children}
+          </div>
+        </div>
+      </body>
     </html>
   );
 }
