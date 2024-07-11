@@ -12,7 +12,7 @@ export default function Page() {
 
       <div className="inset-0 z-0">
         <Image
-          src="/images/login-avatar.png"
+          src="/images/login-avatar.svg"
           alt="Globe background"
           quality={100}
           width={1920}
