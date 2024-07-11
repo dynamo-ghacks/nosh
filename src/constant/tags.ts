@@ -1,0 +1,16 @@
+export const tags = [
+  "GERD (Acid Reflux)",
+  "Celiac Disease",
+  "Crohn's Disease",
+  "Diabetes",
+  "Eosinophilic Esophagitis",
+  "Food Allergy",
+  "Food Intolerance",
+  "Gastroparesis",
+  "Irritable Bowel Syndrome (IBS)",
+  "Lactose Intolerance",
+  "Ulcerative Colitis",
+  "Vegetarian",
+  "Vegan",
+  "Other",
+];

@@ -28,8 +28,10 @@ model User {
   updatedAt   DateTime      @updatedAt
   Destination Destination[]
 
-  tags   Json[]
+  tags   String[]
   Review Review[]
+
+  onboarding Boolean @default(false)
 }
 
 model Account {
