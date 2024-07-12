@@ -1,5 +1,6 @@
 import { AuthGuard } from "@/components/auth/auth-guard";
 import React, { AwaitedReactNode } from "react";
+import { FaGlobeAsia, FaPlus, FaRegUser } from "react-icons/fa";
 
 export default function Layout({ children }) {
   return (
