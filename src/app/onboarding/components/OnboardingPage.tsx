@@ -51,7 +51,7 @@ export function OnboardingPage({ email }: { email: string }) {
           .map((tag, index) => (
             <div
               key={index}
-              className={`font-light w-full flex tags-center justify-between p-3 mb-2 rounded-lg ${
+              className={`font-light w-full flex items-center tags-center justify-between p-3 mb-2 rounded-lg ${
                 selectedTags.includes(tag)
                   ? "bg-orange-500 text-white shadow-md shadow-orange-200"
                   : "border border-orange-500 text-[#262626]"
