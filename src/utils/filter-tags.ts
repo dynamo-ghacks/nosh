@@ -1,10 +1,10 @@
 export function filterTags(userTags: string[], destTags: string[]) {
   const tags: { tag: string; highlight: boolean }[] = [];
 
-  destTags.forEach((tag) => {
+  (destTags ?? []).forEach((tag) => {
     tags.push({
       tag,
-      highlight: userTags.includes(tag),
+      highlight: (userTags ?? []).includes(tag),
     });
   });
 
