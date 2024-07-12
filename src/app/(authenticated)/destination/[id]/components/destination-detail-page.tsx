@@ -28,18 +28,21 @@ export function DestinationDetailPage(props: DestinationDetailPageProps) {
 
   return (
     <div
-      className={`flex flex-col gap-6 text-black ${
-        props.detail.Review.length > 0 && "pb-20"
-      }`}
+      className={`flex flex-col gap-6 text-black ${props.detail.Review.length > 0 && "pb-20"
+        }`}
     >
       {props.detail.image ? (
-        <Image
-          src={props.detail.image}
-          alt={props.detail.name}
-          width={320}
-          height={200}
-          className="aspect-[3 / 2] rounded-lg w-full"
-        />
+        <div className="relative w-full h-64
+        bg-orange-200 rounded-lg overflow-hidden
+        ">
+          <Image
+            src={props.detail.image}
+            alt={props.detail.name}
+            layout={'fill'}
+            objectFit={'contain'}
+            className="aspect-[3 / 2] rounded-lg"
+          />
+        </div>
       ) : (
         <div className="bg-gray-300 aspect-[3 / 2] rounded-lg h-[200px] w-full flex items-center justify-center">
           <FaRegCircle className="text-gray-400 text-4xl" />

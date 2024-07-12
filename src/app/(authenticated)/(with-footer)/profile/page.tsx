@@ -9,7 +9,9 @@ export default async function page() {
   } | null;
   const userReviews = await prisma.review.findMany({
     where: {
-      userId: session?.user?.id,
+      user: {
+        email: session?.user?.email!,
+      },
     },
     include: {
       destination: true,
