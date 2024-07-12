@@ -40,6 +40,7 @@ export const authOptions: NextAuthOptions = {
               name: true,
               image: true,
               email: true,
+              tags: true,
             },
           })
         : {};

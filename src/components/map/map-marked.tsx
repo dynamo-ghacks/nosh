@@ -21,7 +21,7 @@ const MapMarked = ({
   containerStyle: React.CSSProperties;
 }) => {
   return (
-    <LoadScript googleMapsApiKey={googleMapsConfig.apiKey}>
+    <LoadScript googleMapsApiKey={""}>
       <GoogleMap
         mapContainerStyle={containerStyle}
         center={center}

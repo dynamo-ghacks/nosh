@@ -1,39 +1,53 @@
 import { Badge } from "flowbite-react";
 import Image from "next/image";
 import React from "react";
-import { FaMapPin, FaCheck } from "react-icons/fa6";
+import { FaMapPin, FaRegCircle } from "react-icons/fa6";
 import { RiVerifiedBadgeFill } from "react-icons/ri";
-import { FaTimes } from "react-icons/fa";
 import MapMarked from "../../../../components/map/map-marked";
+import { DefaultUser, getServerSession } from "next-auth";
+import { authOptions } from "../../../api/auth/[...nextauth]/options";
+import { getDestination } from "./actions/destination.action";
+import { notFound } from "next/navigation";
+import { ReviewSection } from "./components/review-section";
+import { TagView } from "@/components/tag/tag-view";
 
-export default async function Page() {
-  const detail = {
-    title: "Nancy",
-    description:
-      "Halal Restaurant in Jakarta Halal Restaurant in Jakarta. Halal Restaurant in Jakarta.",
-    isVerified: true,
-    tags: [
-      { label: "Halal", check: true },
-      { label: "Gluten Free", check: false },
-    ],
-    image:
-      "https://upload.wikimedia.org/wikipedia/commons/3/3c/Vue_de_nuit_de_la_Place_Stanislas_%C3%A0_Nancy.jpg",
-    address: "Jl. Setiabudi No. 20, Jakarta Selatan",
-    latitude: -6.1876407,
-    longitude: 106.7596409,
+export default async function Page({
+  params,
+}: {
+  params: {
+    id: string;
   };
+}) {
+  const session = (await getServerSession(authOptions)) as {
+    user?: DefaultUser & { tags: string[] };
+  } | null;
+
+  const data = await getDestination(params.id);
+
+  if (!data.success || !data.data?.destination?.data) {
+    notFound();
+  }
+
+  const detail = data.data.destination.data;
+
   return (
     <div className="flex flex-col gap-6 text-black">
-      <Image
-        src={detail.image}
-        alt={detail.title}
-        width={320}
-        height={200}
-        className="aspect-[3 / 2] rounded-lg w-full"
-      />
+      {detail.image ? (
+        <Image
+          src={detail.image}
+          alt={detail.name}
+          width={320}
+          height={200}
+          className="aspect-[3 / 2] rounded-lg w-full"
+        />
+      ) : (
+        <div className="bg-gray-300 aspect-[3 / 2] rounded-lg h-[200px] w-full flex items-center justify-center">
+          <FaRegCircle className="text-gray-400 text-4xl" />
+        </div>
+      )}
       <div className="flex flex-col gap-4">
         <div className="flex flex-row items-center gap-2">
-          <h2 className="font-semibold text-2xl">{detail.title}</h2>
+          <h2 className="font-semibold text-2xl">{detail.name}</h2>
           {detail.isVerified && (
             <Badge
               color={"success"}
@@ -52,14 +66,10 @@ export default async function Page() {
           <p>{detail.address}</p>
         </div>
         <div className="flex flex-row flex-wrap gap-2">
-          {detail.tags.map((tag) => (
-            <Badge
-              color={tag.check ? "success" : "failure"}
-              icon={tag.check ? FaCheck : FaTimes}
-            >
-              {tag.check ? tag.label : `${tag.label}`}
-            </Badge>
-          ))}
+          <TagView
+            userTags={session?.user?.tags ?? []}
+            destTags={detail?.tags ?? []}
+          />
         </div>
       </div>
       <div>
@@ -71,6 +81,15 @@ export default async function Page() {
             height: "200px",
             borderRadius: "16px",
           }}
+        />
+      </div>
+      <div>
+        <p className="mb-2">Review</p>
+        <ReviewSection
+          userTags={session?.user?.tags ?? []}
+          reviews={data.data.reviews.data}
+          meta={data.data.reviews.meta}
+          destinationId={params.id}
         />
       </div>
     </div>

@@ -24,9 +24,8 @@ model User {
   // Optional for WebAuthn support
   Authenticator Authenticator[]
 
-  createdAt   DateTime      @default(now())
-  updatedAt   DateTime      @updatedAt
-  Destination Destination[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   tags   String[]
   Review Review[]
@@ -90,29 +89,36 @@ model Authenticator {
 }
 
 model Destination {
-  id          String  @id @default(cuid())
-  userId      String
+  id          String   @id @default(cuid())
   name        String
   headline    String
   description String
   latitude    Float
   longitude   Float
   address     String
-  tags        Json[]
+  tags        String[]
   isVerified  Boolean
+  image       String?
 
-  user   User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   Review Review[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Review {
-  id            String @id @default(cuid())
+  id            String   @id @default(cuid())
   userId        String
   destinationId String
   title         String
   body          String
-  tags          Json[]
+  tags          String[]
 
   user        User        @relation(fields: [userId], references: [id], onDelete: Cascade)
   destination Destination @relation(fields: [destinationId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, destinationId])
 }

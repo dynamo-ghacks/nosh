@@ -14,9 +14,9 @@ export default async function Page() {
     redirect("/auth/login");
   }
 
-  if (session?.user?.onboarding) {
-    redirect("/home");
-  }
+  // if (session?.user?.onboarding) {
+  //   redirect("/home");
+  // }
 
   return (
     <div className="overflow-y-hidden relative h-full flex flex-col gap-4 min-h-screen bg-white p-6 py-10">
