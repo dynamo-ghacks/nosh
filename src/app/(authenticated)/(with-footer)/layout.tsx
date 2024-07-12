@@ -6,7 +6,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   return (
     <>
       {children}
-      <div className="w-full bg-orange-500 flex justify-around items-center pt-4 pb-2 fixed bottom-0 left-0 right-0 max-w-md mx-auto rounded-t-3xl">
+      <div className="w-full bg-orange-500 flex justify-around items-center pt-4 pb-2 fixed bottom-0 left-0 right-0 max-w-md mx-auto rounded-t-3xl z-50">
         <div className="w-20 flex flex-col items-center text-white">
           <FaGlobeAsia />
           <span className="text-sm mt-2">Discovery</span>

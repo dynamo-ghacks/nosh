@@ -3,14 +3,35 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Drawer } from "vaul";
 import { GoogleMap, Marker, useJsApiLoader } from '@react-google-maps/api';
 import Chat from '../components/chat-components';
+import RestaurantCard from '../components/restaurant-cards';
+import { useRouter } from 'next/navigation';
+import executeRAGrequest from '../actions/rag';
 
 const HomePage = (
-    { userProfileUrl, username }: { userProfileUrl: string, username: string }
+    { userProfileUrl, username, userTags, recommendedRestaurant, nearestRestaurants }: {
+        userProfileUrl: string, username: string,
+        userTags: string[], recommendedRestaurant: {
+            id: string, name: string, location: string, image: string, destinationTags: string[], userTags: string[], isHighlighted?: boolean,
+        },
+        nearestRestaurants: {
+            id: string, name: string, location: string, image: string, destinationTags: string[], userTags: string[], isHighlighted?: boolean,
+        }[]
+    }
 ) => {
     const [open, setOpen] = useState(false);
     const [currentLocation, setCurrentLocation] = useState<google.maps.LatLngLiteral | null>(null);
     const [selectedLocation, setSelectedLocation] = useState<google.maps.LatLngLiteral | null>(null);
     const mapRef = useRef<google.maps.Map | null>(null);
+    const router = useRouter();
+    const [messages, setMessages] = useState
+        <{ text: string, isUser: boolean, restaurants?: { name: string, location: string, image: string, destinationTags: string[], userTags: string[], id: string }[] }[]>
+        ([
+            { text: `Hi ${username}! How can I help you today?`, isUser: false },
+        ]);
+    useEffect(() => {
+        console.log(messages);
+    }
+        , [messages]);
 
     const { isLoaded } = useJsApiLoader({
         id: 'google-map-script',
@@ -77,8 +98,7 @@ const HomePage = (
     };
 
     return (
-        <div className="relative min-h-screen bg-gray-100">
-            {/* Map background */}
+        <div className="relative max-h-screen bg-gray-100 pb-20">
             <div className="absolute inset-0 bg-blue-100">
                 <div className="absolute inset-0">
                     {isLoaded ? (
@@ -110,21 +130,19 @@ const HomePage = (
                 </div>
             </div>
 
-            {/* Floating content */}
             <div className="relative z-10 flex flex-col min-h-screen text-black">
-                {/* Back navigation */}
                 <div className="p-4">
-                    <button className="p-2 rounded-full bg-white shadow">
-                        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <button className="p-2 rounded-full bg-white shadow z-50"
+                        onClick={() => router.back()}
+                    >
+                        <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
                         </svg>
                     </button>
                 </div>
 
-                {/* Spacer to push content to bottom */}
                 <div className="flex-grow"></div>
 
-                {/* Drawer component */}
                 <Drawer.Root open={open} onClose={
                     () => setOpen(false)
                 }>
@@ -139,7 +157,7 @@ const HomePage = (
                     <Drawer.Portal>
                         <Drawer.Overlay className="fixed inset-0 bg-black/40" />
                         <Drawer.Content className="bg-white flex flex-col rounded-t-[10px] h-[96%] mt-24 fixed bottom-0 left-0 right-0 w-full max-w-md mx-auto text-black">
-                            <div className="p-6 flex-1 overflow-y-auto">
+                            <div className="p-6 flex-1 overflow-y-auto pb-24">
                                 <div
                                     className="cursor-pointer py-2"
                                     onClick={handleCloseDrawer}
@@ -149,57 +167,68 @@ const HomePage = (
 
                                 <h2 className="text-xl font-semibold mb-6 text-center mt-6">Discovery</h2>
 
-                                <Chat messages={[
-                                    { text: `Hi ${username}! How can I help you today?`, isUser: false },
-                                    { text: "I'm looking for a restaurant nearby.", isUser: true },
-                                    { text: "Sure! Let me help you with that.", isUser: false },
-                                    // Add more messages here
-                                ]}
+                                <Chat messages={messages}
                                     userProfileUrl={userProfileUrl}
+                                    userTags={userTags}
                                 />
 
-                                {/* Search input */}
                                 <div className="relative mb-4">
                                     <input
                                         type="text"
                                         placeholder="Write your answer..."
                                         className="w-full p-2 pr-10 rounded-md border border-orange-300 pl-4 bg-orange-50"
+                                        onKeyDown={(e) => {
+                                            if (e.key === "Enter") {
+                                                const userMessage = { text: e.currentTarget.value, isUser: true };
+                                                setMessages(prevMessages => [...prevMessages, userMessage]);
+                                                executeRAGrequest(e.currentTarget.value).then((response) => {
+                                                    setMessages(prevMessages => [
+                                                        ...prevMessages,
+                                                        {
+                                                            text: response.text,
+                                                            isUser: false,
+                                                            restaurants: response.destinationCited.map((destination) => ({
+                                                                name: destination.name,
+                                                                location: destination.address,
+                                                                image: destination.image || "/images/restaurant-sign.png",
+                                                                destinationTags: destination.tags,
+                                                                userTags: userTags,
+                                                                id: destination.id
+                                                            }))
+                                                        }
+                                                    ]);
+
+                                                });
+                                                e.currentTarget.value = "";
+                                            }
+                                        }}
                                     />
                                     <svg className="w-6 h-6 text-gray-400 absolute right-3 top-2" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none" /><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z" /></svg>
                                 </div>
 
-                                {/* Recommended section */}
-                                <h3 className="text-lg font-semibold mb-2">Recommended for you</h3>
-                                <div className="bg-orange-400 rounded-lg overflow-hidden shadow-md">
-                                    <div className="h-24 bg-gray-300"></div>
-                                    <div className="p-4">
-                                        <h4 className="text-xl font-bold text-white mb-2">Khalid</h4>
-                                        <span>
+                                <h3 className="text-lg font-semibold mb-2 mt-8">Recommended for you</h3>
+                                <RestaurantCard
+                                    name={recommendedRestaurant.name}
+                                    location={recommendedRestaurant.location}
+                                    image={recommendedRestaurant.image}
+                                    destinationTags={recommendedRestaurant.destinationTags}
+                                    userTags={recommendedRestaurant.userTags}
+                                    isHighlighted={true}
+                                    viewDetailUrl={`/destination/${recommendedRestaurant.id}`}
+                                />
 
-                                            <p className="text-white text-sm mb-2">Jl. Setiabudi No. 20, Jakarta Selatan</p>
-                                        </span>
-                                        <ul className="text-white">
-                                            <li className="flex items-center">
-                                                <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                                                </svg>
-                                                Gluten-Free Options
-                                            </li>
-                                            <li className="flex items-center">
-                                                <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                                                </svg>
-                                                Vegetarian Friendly
-                                            </li>
-                                            <li className="flex items-center">
-                                                <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                                                </svg>
-                                                Great Atmosphere
-                                            </li>
-                                        </ul>
-                                    </div>
-                                </div>
+                                <h3 className="text-lg font-semibold mb-2 mt-6">Nearest to you</h3>
+                                {nearestRestaurants.map((restaurant, index) => (
+                                    <RestaurantCard
+                                        key={index}
+                                        name={restaurant.name}
+                                        location={restaurant.location}
+                                        image={restaurant.image}
+                                        destinationTags={restaurant.destinationTags}
+                                        userTags={restaurant.userTags}
+                                        viewDetailUrl={`/destination/${restaurant.id}`}
+                                    />
+                                ))}
                             </div>
                         </Drawer.Content>
                     </Drawer.Portal>
