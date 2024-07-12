@@ -1,6 +1,7 @@
 "use server";
 
 import { getServerSession } from "next-auth";
+import prisma from "@/db/prisma";
 
 export async function getDestination(id: string) {
   try {

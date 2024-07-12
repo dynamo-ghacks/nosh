@@ -1,45 +1,43 @@
 import { DefaultUser, getServerSession } from "next-auth";
 import HomePage from "./layouts/home-page";
 import { authOptions } from "@/app/api/auth/[...nextauth]/options";
+import prisma from "@/db/prisma";
 
-export default async function pages(){
-    const session = (await getServerSession(authOptions)) as {
-        user?: DefaultUser & { tags: string[] };
-      } | null;
-    const newestDestination = await prisma.destination.findFirst({
-        orderBy: { createdAt: 'desc' }
-    })
-    const allDestinations = await prisma.destination.findMany()
-    return (
-        <HomePage 
-        userProfileUrl={session?.user?.image!}
-        username={session?.user?.name!}
-        userTags={session?.user?.tags!}
-        recommendedRestaurant={
-            {
-                name: newestDestination?.name!,
-                location: newestDestination?.address!,
-                image: newestDestination?.image!,
-                destinationTags: newestDestination?.tags!,
-                userTags: session?.user?.tags!,
-                isHighlighted: true,
-                id: newestDestination?.id!,
-                latitude: newestDestination?.latitude!,
-                longitude: newestDestination?.longitude!
-            }
-        }
-        nearestRestaurants={allDestinations.map(destination => ({
-            name: destination.name,
-            location: destination.address,
-            image: destination.image || "/images/restaurant-sign.png",
-            destinationTags: destination.tags,
-            userTags: session?.user?.tags!,
-            isHighlighted: false,
-            id: destination.id,
-            latitude: destination.latitude,
-            longitude: destination.longitude
-        }))
-        }
-        />
-    )
+export default async function pages() {
+  const session = (await getServerSession(authOptions)) as {
+    user?: DefaultUser & { tags: string[] };
+  } | null;
+  const newestDestination = await prisma.destination.findFirst({
+    orderBy: { createdAt: "desc" },
+  });
+  const allDestinations = await prisma.destination.findMany();
+  return (
+    <HomePage
+      userProfileUrl={session?.user?.image!}
+      username={session?.user?.name!}
+      userTags={session?.user?.tags!}
+      recommendedRestaurant={{
+        name: newestDestination?.name!,
+        location: newestDestination?.address!,
+        image: newestDestination?.image!,
+        destinationTags: newestDestination?.tags!,
+        userTags: session?.user?.tags!,
+        isHighlighted: true,
+        id: newestDestination?.id!,
+        latitude: newestDestination?.latitude!,
+        longitude: newestDestination?.longitude!,
+      }}
+      nearestRestaurants={allDestinations.map((destination) => ({
+        name: destination.name,
+        location: destination.address,
+        image: destination.image || "/images/restaurant-sign.png",
+        destinationTags: destination.tags,
+        userTags: session?.user?.tags!,
+        isHighlighted: false,
+        id: destination.id,
+        latitude: destination.latitude,
+        longitude: destination.longitude,
+      }))}
+    />
+  );
 }

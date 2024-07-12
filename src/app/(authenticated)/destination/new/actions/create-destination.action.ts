@@ -1,6 +1,7 @@
 "use server";
 
 import { CreateDestination } from "../schema";
+import prisma from "@/db/prisma";
 
 export async function createDestination(data: CreateDestination) {
   try {

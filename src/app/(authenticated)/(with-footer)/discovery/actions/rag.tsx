@@ -1,5 +1,6 @@
 "use server";
 import { tags } from "@/constant/tags";
+import prisma from "@/db/prisma";
 import { CohereClient } from "cohere-ai";
 
 const cohere = new CohereClient({

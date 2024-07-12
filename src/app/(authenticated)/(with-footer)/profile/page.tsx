@@ -2,6 +2,7 @@ import { authOptions } from "@/app/api/auth/[...nextauth]/options";
 import ProfileDisplay from "./components/profile-display";
 import UserReview from "./components/user-review";
 import { DefaultUser, getServerSession } from "next-auth";
+import prisma from "@/db/prisma";
 
 export default async function page() {
   const session = (await getServerSession(authOptions)) as {
