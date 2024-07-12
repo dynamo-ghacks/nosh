@@ -6,6 +6,7 @@ export default async function pages(){
     return (
         <HomePage 
         userProfileUrl={session?.user.image!}
+        username={session?.user.name!}
         />
     )
 }

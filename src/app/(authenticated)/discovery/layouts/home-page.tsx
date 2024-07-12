@@ -5,7 +5,7 @@ import { GoogleMap, Marker, useJsApiLoader } from '@react-google-maps/api';
 import Chat from '../components/chat-components';
 
 const HomePage = (
-    {userProfileUrl}: {userProfileUrl: string}
+    {userProfileUrl, username}: {userProfileUrl: string, username: string}
 ) => {
     const [open, setOpen] = useState(false);
     const [currentLocation, setCurrentLocation] = useState<google.maps.LatLngLiteral | null>(null);
@@ -150,8 +150,7 @@ const HomePage = (
                                 <h2 className="text-xl font-semibold mb-6 text-center mt-6">Discovery</h2>
 
                                 <Chat messages={[
-                                    { text: "Hello!", isUser: true },
-                                    { text: "Hi! How can I help you?", isUser: false },
+                                    { text: `Hi ${username}! How can I help you today?`, isUser: false },
                                     { text: "I'm looking for a restaurant nearby.", isUser: true },
                                     { text: "Sure! Let me help you with that.", isUser: false },
                                     // Add more messages here
