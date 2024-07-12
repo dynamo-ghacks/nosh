@@ -70,6 +70,10 @@ export function ReviewFormModal({
             name: user?.name,
           },
         });
+        hooks.setDestination({
+          ...hooks.destination,
+          tags: Array.from(new Set([...hooks.destination.tags, ...result.data.tags]))
+        })
       }
 
       hooks.setLoading(false);
