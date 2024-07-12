@@ -143,7 +143,7 @@ const HomePage = (
                     <Drawer.Portal>
                         <Drawer.Overlay className="fixed inset-0 bg-black/40" />
                         <Drawer.Content className="bg-white flex flex-col rounded-t-[10px] h-[96%] mt-24 fixed bottom-0 left-0 right-0 w-full max-w-md mx-auto text-black">
-                            <div className="p-6 flex-1 overflow-y-auto">
+                            <div className="p-6 flex-1 overflow-y-auto pb-24">
                                 <div
                                     className="cursor-pointer py-2"
                                     onClick={handleCloseDrawer}
@@ -157,6 +157,7 @@ const HomePage = (
                                     { text: `Hi ${username}! How can I help you today?`, isUser: false },
                                 ]}
                                     userProfileUrl={userProfileUrl}
+                                    userTags={userTags}
                                 />
 
                                 {/* Search input */}
