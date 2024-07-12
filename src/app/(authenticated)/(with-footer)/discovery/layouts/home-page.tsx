@@ -30,10 +30,6 @@ const HomePage = (
         ([
             { text: `Hi ${username}! How can I help you today?`, isUser: false },
         ]);
-    useEffect(() => {
-        console.log(messages);
-    }
-        , [messages]);
 
     const { isLoaded } = useJsApiLoader({
         id: 'google-map-script',
@@ -99,7 +95,6 @@ const HomePage = (
         }
     };
 
-    console.log(currentLocation)
 
     return (
         <div className="relative max-h-screen bg-gray-100 pb-20 h-full">
