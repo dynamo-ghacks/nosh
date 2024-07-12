@@ -1,11 +1,14 @@
 import { TagView } from '@/components/tag/tag-view';
 import Image from 'next/image';
 
-const RestaurantCard = ({ name, location, image, destinationTags, userTags }:
-    { name: string, location: string, image: string, destinationTags: string[], userTags: string[] }
+const RestaurantCard = ({ name, location, image, destinationTags, userTags, isHighlighted = false }:
+    { name: string, location: string, image: string, destinationTags: string[], userTags: string[], isHighlighted?: boolean}
 ) => {
     return (
-        <div className="bg-orange-100 rounded-lg overflow-hidden shadow-md">
+        <div className={`${
+            isHighlighted ? 'bg-orange-100' : 'bg-white'
+        } p-2
+        rounded-lg overflow-hidden shadow-md`}>
             <div className="relative h-48">
                 <Image
                     src={image}

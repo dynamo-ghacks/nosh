@@ -6,9 +6,10 @@ import Chat from '../components/chat-components';
 import RestaurantCard from '../components/restaurant-cards';
 
 const HomePage = (
-    { userProfileUrl, username, userTags }: { userProfileUrl: string, username: string,
+    { userProfileUrl, username, userTags }: {
+        userProfileUrl: string, username: string,
         userTags: string[]
-     }
+    }
 ) => {
     const [open, setOpen] = useState(false);
     const [currentLocation, setCurrentLocation] = useState<google.maps.LatLngLiteral | null>(null);
@@ -154,9 +155,6 @@ const HomePage = (
 
                                 <Chat messages={[
                                     { text: `Hi ${username}! How can I help you today?`, isUser: false },
-                                    { text: "I'm looking for a restaurant nearby.", isUser: true },
-                                    { text: "Sure! Let me help you with that.", isUser: false },
-                                    // Add more messages here
                                 ]}
                                     userProfileUrl={userProfileUrl}
                                 />
@@ -172,7 +170,17 @@ const HomePage = (
                                 </div>
 
                                 {/* Recommended section */}
-                                <h3 className="text-lg font-semibold mb-2">Recommended for you</h3>
+                                <h3 className="text-lg font-semibold mb-2 mt-8">Recommended for you</h3>
+                                <RestaurantCard
+                                    name='Khalid'
+                                    location='Jl. Setiabudi No. 20, Jakarta Selatan'
+                                    image='/images/login-avatar.svg'
+                                    destinationTags={['Gluten-Free Options', 'Vegetarian Friendly', 'Great Atmosphere']}
+                                    userTags={userTags}
+                                    isHighlighted={true}
+                                />
+
+                                <h3 className="text-lg font-semibold mb-2 mt-6">Nearest to you</h3>
                                 <RestaurantCard
                                     name='Khalid'
                                     location='Jl. Setiabudi No. 20, Jakarta Selatan'
