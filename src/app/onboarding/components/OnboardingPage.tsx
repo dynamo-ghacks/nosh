@@ -27,9 +27,7 @@ export function OnboardingPage({ email }: { email: string }) {
       if (res.success) {
         router.replace("/discovery");
       }
-    } catch (err) {
-      console.log(err);
-    }
+    } catch (err) {}
   };
 
   return (
@@ -47,7 +45,9 @@ export function OnboardingPage({ email }: { email: string }) {
       </p>
       <div className="h-full flex flex-col gap-4 overflow-y-auto hide-scrollbar">
         {tags
-          .filter((tag) => tag.toLowerCase().includes(searchTerm.toLowerCase()))
+          .filter((tag) =>
+            tag.toLowerCase().includes(searchTerm.trim().toLowerCase())
+          )
           .map((tag, index) => (
             <div
               key={index}

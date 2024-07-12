@@ -18,7 +18,9 @@ export function CustomTagSelect({
     const value = event.target.value;
     setInputValue(value);
     setFilteredTags(
-      tags.filter((tag) => tag.toLowerCase().includes(value.toLowerCase()))
+      tags.filter((tag) =>
+        tag.toLowerCase().includes(value.trim().toLowerCase())
+      )
     );
   };
 
