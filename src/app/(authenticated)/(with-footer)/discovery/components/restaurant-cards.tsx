@@ -3,20 +3,20 @@ import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 
 const RestaurantCard = ({ name, location, image, destinationTags, userTags, isHighlighted = false, viewDetailUrl }:
-    { name: string, location: string, image: string, destinationTags: string[], userTags: string[], isHighlighted?: boolean, viewDetailUrl: string}
+    { name: string, location: string, image: string, destinationTags: string[], userTags: string[], isHighlighted?: boolean, viewDetailUrl: string }
 ) => {
     const router = useRouter();
     return (
-        <div className={`${
-            isHighlighted ? 'bg-orange-100' : 'bg-white'
-        } p-2
-        rounded-lg overflow-hidden shadow-md mb-6`}>
-            <div className="relative h-48">
+        <div className={`${isHighlighted ? 'bg-orange-100' : 'bg-white'
+            } p-2
+        rounded-lg overflow-hidden shadow-md mb-4`}>
+            <div className="relative h-48 rounded-lg m-2">
                 <Image
                     src={image}
                     alt={name}
                     layout="fill"
                     objectFit="cover"
+                    className="rounded-lg"
                 />
             </div>
             <div className="p-4">
@@ -29,17 +29,18 @@ const RestaurantCard = ({ name, location, image, destinationTags, userTags, isHi
                 </p>
                 <div className="flex flex-row flex-wrap gap-2">
                     <TagView userTags={userTags} destTags={destinationTags}
-                    nonHighlightedBgColor={isHighlighted ? 'bg-orange-100' : 'bg-white'}
-                    highlightedBgColor='bg-orange-500'
-                    highlightedTextColor='text-white'
-                    nonHighlightedTextColor='text-orange-500'
-                    maxTags={3}
+                        nonHighlightedBgColor={isHighlighted ? 'bg-orange-100' : 'bg-white'}
+                        highlightedBgColor='bg-orange-500'
+                        highlightedTextColor='text-white'
+                        nonHighlightedTextColor='text-orange-500'
+                        maxTags={3}
                     />
                 </div>
-                <button className={`${
-                    isHighlighted ? 'bg-white text-orange-500' : 'border-orange-400 text-white'
-                }bg-white rounded-md py-2 px-3 w-full mt-4 border-2`}
-                onClick={() => router.push(viewDetailUrl)}
+                <button className={`${isHighlighted ? 'bg-white text-orange-500' : 'border-orange-400 text-white'
+                    }bg-white rounded-md py-2 px-3 w-full mt-4 border-2
+                    ${isHighlighted ? 'hover:bg-orange-400' : 'hover:bg-orange-100'}
+                    `}
+                    onClick={() => router.push(viewDetailUrl)}
                 >
                     View Detail
                 </button>

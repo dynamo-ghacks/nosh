@@ -10,6 +10,19 @@ const ChatBubble = ({ message, isUser, userProfileUrl, restaurants }:
     }
 ) => (
     <>
+        <div className={`flex ${isUser ? 'flex-row-reverse' : 'flex-row'} items-end mt-4`}>
+            <Image
+                src={isUser ? userProfileUrl : '/images/ai-avatar.svg'}
+                alt={isUser ? 'User Avatar' : 'AI Avatar'}
+                width={32}
+                height={32}
+                className="rounded-full"
+            />
+            <div className={`rounded-lg p-3 max-w-xs lg:max-w-md mx-2 ${isUser ? 'bg-orange-500 text-white' : 'bg-pink-100 text-gray-800'
+                }`}>
+                <p>{message}</p>
+            </div>
+        </div>
         {restaurants && restaurants.length > 0 && restaurants.map((restaurant, index) => {
             return <div key={index} className={`flex ${isUser ? 'flex-row-reverse' : 'flex-row'} items-end mt-4`}>
                 <Image
@@ -32,34 +45,19 @@ const ChatBubble = ({ message, isUser, userProfileUrl, restaurants }:
                 </div>
             </div>
         })}
-
-        <div className={`flex ${isUser ? 'flex-row-reverse' : 'flex-row'} items-end mt-4`}>
-            <Image
-                src={isUser ? userProfileUrl : '/images/ai-avatar.svg'}
-                alt={isUser ? 'User Avatar' : 'AI Avatar'}
-                width={32}
-                height={32}
-                className="rounded-full"
-            />
-            <div className={`rounded-lg p-3 max-w-xs lg:max-w-md mx-2 ${isUser ? 'bg-orange-500 text-white' : 'bg-pink-100 text-gray-800'
-                }`}>
-                <p>{message}</p>
-            </div>
-        </div>
     </>
 );
 
-export const Chat = ({ messages, userProfileUrl, userTags, restaurants }:
+export const Chat = ({ messages, userProfileUrl, userTags }:
     {
-        messages: { text: string, isUser: boolean }[],
+        messages: { text: string, isUser: boolean, restaurants?: { name: string, location: string, image: string, destinationTags: string[], userTags: string[], id: string }[] }[],
         userProfileUrl: string, userTags: string[],
-        restaurants?: { name: string, location: string, image: string, destinationTags: string[], userTags: string[], id: string }[]
     }
 ) => (
     <div className="flex flex-col space-y-4 mb-8">
         {messages.map((msg, index) => {
             return <ChatBubble key={index} message={msg.text} isUser={msg.isUser}
-                userProfileUrl={userProfileUrl} userTags={userTags} restaurants={restaurants}
+                userProfileUrl={userProfileUrl} userTags={userTags} restaurants={msg.restaurants}
             />
         })}
     </div>

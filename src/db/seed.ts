@@ -26,8 +26,8 @@ async function main() {
       headline: "A verified halal restaurant in Jakarta",
       description:
         "Halal Restaurant in Jakarta Halal Restaurant in Jakarta. Halal Restaurant in Jakarta.",
-      latitude: -6.1876407,
-      longitude: 106.7596409,
+      latitude: -6.248261439722531,
+      longitude: 106.61081185982164,
       address: "Jl. Setiabudi No. 20, Jakarta Selatan",
       tags: ["Diabetes", "Gluten Free"],
       isVerified: true,

@@ -12,9 +12,11 @@ const HomePage = (
         userProfileUrl: string, username: string,
         userTags: string[], recommendedRestaurant: {
             id: string, name: string, location: string, image: string, destinationTags: string[], userTags: string[], isHighlighted?: boolean,
+            latitude: number, longitude: number
         },
         nearestRestaurants: {
             id: string, name: string, location: string, image: string, destinationTags: string[], userTags: string[], isHighlighted?: boolean,
+            latitude: number, longitude: number
         }[]
     }
 ) => {
@@ -22,7 +24,6 @@ const HomePage = (
     const [currentLocation, setCurrentLocation] = useState<google.maps.LatLngLiteral | null>(null);
     const [selectedLocation, setSelectedLocation] = useState<google.maps.LatLngLiteral | null>(null);
     const mapRef = useRef<google.maps.Map | null>(null);
-    const router = useRouter();
     const [messages, setMessages] = useState
         <{ text: string, isUser: boolean, restaurants?: { name: string, location: string, image: string, destinationTags: string[], userTags: string[], id: string }[] }[]>
         ([
@@ -97,6 +98,8 @@ const HomePage = (
         }
     };
 
+    console.log(currentLocation)
+
     return (
         <div className="relative max-h-screen bg-gray-100 pb-20">
             <div className="absolute inset-0 bg-blue-100">
@@ -110,19 +113,13 @@ const HomePage = (
                             options={mapOptions}
                             onDragEnd={onMapDragEnd}
                         >
-                            {selectedLocation && (
+                            {nearestRestaurants.map((restaurant, index) => (
                                 <Marker
-                                    position={selectedLocation}
-                                    draggable={true}
-                                    onDragEnd={(e) => {
-                                        if (e.latLng)
-                                            setSelectedLocation({
-                                                lat: e.latLng.lat(),
-                                                lng: e.latLng.lng()
-                                            });
-                                    }}
+                                    key={index}
+                                    position={{ lat: restaurant.latitude, lng: restaurant.longitude }}
+                                    title={restaurant.name}
                                 />
-                            )}
+                            ))}
                         </GoogleMap>
                     ) : (
                         <div>Loading map...</div>
@@ -131,16 +128,6 @@ const HomePage = (
             </div>
 
             <div className="relative z-10 flex flex-col min-h-screen text-black">
-                <div className="p-4">
-                    <button className="p-2 rounded-full bg-white shadow z-50"
-                        onClick={() => router.back()}
-                    >
-                        <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-                        </svg>
-                    </button>
-                </div>
-
                 <div className="flex-grow"></div>
 
                 <Drawer.Root open={open} onClose={
@@ -150,7 +137,7 @@ const HomePage = (
                         {!open &&
                             <div className="bg-white rounded-t-3xl shadow-lg p-6 text-black cursor-pointer pb-24">
                                 <div className="mx-auto w-12 h-1.5 flex-shrink-0 rounded-full bg-zinc-300 mb-8" />
-                                <h2 className="text-xl font-semibold mb-6 text-center mt-6">Discovery</h2>
+                                <h2 className="text-2xl font-semibold mb-6 text-center mt-6">Discovery</h2>
                             </div>
                         }
                     </Drawer.Trigger>

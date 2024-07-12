@@ -20,7 +20,7 @@ export default async function executeRAGrequest(message: string) {
       headline: destination.headline,
     })),
     preamble:
-      "You are nosh AI discovery chatbot. Your task is to recommend most suitable restaurants to the user based on their dietary needs and limitation. If you don't find the suitable restaurant, please just say so.",
+      "You are nosh AI discovery chatbot. Your task is to recommend most suitable restaurants to the user based on their dietary needs and limitation.",
   });
 
   const destinationCited = response.citations
