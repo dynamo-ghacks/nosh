@@ -10,6 +10,7 @@ import { getDestination } from "./actions/destination.action";
 import { notFound } from "next/navigation";
 import { ReviewSection } from "./components/review-section";
 import { TagView } from "@/components/tag/tag-view";
+import { AddReviewSection } from "./components/add-review-section";
 
 export default async function Page({
   params,
@@ -31,7 +32,11 @@ export default async function Page({
   const detail = data.data.destination.data;
 
   return (
-    <div className="flex flex-col gap-6 text-black">
+    <div
+      className={`flex flex-col gap-6 text-black ${
+        !data.data.userReview && "pb-20"
+      }`}
+    >
       {detail.image ? (
         <Image
           src={detail.image}
@@ -61,16 +66,14 @@ export default async function Page({
         <p className="text-sm text-gray-500 dark:text-gray-400">
           {detail.description}
         </p>
-        <div className="text-sm flex flex-row items-center gap-2">
+        <div className="text-sm flex flex-row items-center gap-2 w-full">
           <FaMapPin />
           <p>{detail.address}</p>
         </div>
-        <div className="flex flex-row flex-wrap gap-2">
-          <TagView
-            userTags={session?.user?.tags ?? []}
-            destTags={detail?.tags ?? []}
-          />
-        </div>
+        <TagView
+          userTags={session?.user?.tags ?? []}
+          destTags={detail?.tags ?? []}
+        />
       </div>
       <div>
         <p className="mb-4">Map Location</p>
@@ -86,12 +89,16 @@ export default async function Page({
       <div>
         <p className="mb-2">Review</p>
         <ReviewSection
-          userTags={session?.user?.tags ?? []}
+          user={session?.user}
           reviews={data.data.reviews.data}
           meta={data.data.reviews.meta}
           destinationId={params.id}
+          userReview={data.data.userReview}
         />
       </div>
+      {session?.user && !data.data.userReview && (
+        <AddReviewSection user={session.user} destinationId={params.id} />
+      )}
     </div>
   );
 }
