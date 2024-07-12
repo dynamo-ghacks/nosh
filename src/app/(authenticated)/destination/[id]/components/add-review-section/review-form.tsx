@@ -11,6 +11,7 @@ import { CustomInput } from "@/components/form/custom-input";
 import { CustomTextarea } from "@/components/form/custom-textarea";
 import { CustomTagSelect } from "@/components/form/custom-tag-select";
 import { useDestinationDetail } from "../../hooks/useDestinationDetail";
+import { CustomButton } from "@/components/ui/custom-button";
 
 export function ReviewFormModal({
   hooks,
@@ -21,14 +22,20 @@ export function ReviewFormModal({
   const [selectedTags, setSelectedTags] = useState<string[]>(
     modal.defaultValues?.tags ?? []
   );
-
-  const { control, handleSubmit, reset, setValue } = useForm<ReviewFormData>({
+  const {
+    control,
+    reset,
+    setValue,
+    formState: { isValid },
+    getValues,
+  } = useForm<ReviewFormData>({
     resolver: zodResolver(reviewSchema),
     defaultValues: modal.defaultValues ?? {
       title: "",
       body: "",
       tags: [],
     },
+    mode: "onChange",
   });
 
   useEffect(() => {
@@ -65,13 +72,14 @@ export function ReviewFormModal({
         });
       }
 
+      hooks.setLoading(false);
       hooks.setModal({
         show: false,
       });
       reset();
     } catch (err) {
     } finally {
-      hooks.setLoading(true);
+      hooks.setLoading(false);
     }
   };
 
@@ -86,7 +94,7 @@ export function ReviewFormModal({
         }
         size="md"
       >
-        <Modal.Header>
+        <Modal.Header title="">
           <div className="flex flex-row items-center justify-between">
             {user.image ? (
               <Avatar
@@ -113,7 +121,14 @@ export function ReviewFormModal({
         </Modal.Header>
         <Modal.Body className="hide-scrollbar min-h-96">
           <form
-            onSubmit={handleSubmit(_onSubmit)}
+            onSubmit={(e) => {
+              e.preventDefault();
+              _onSubmit({
+                title: getValues("title"),
+                body: getValues("body"),
+                tags: getValues("tags"),
+              });
+            }}
             className="flex flex-col gap-4"
           >
             <CustomInput
@@ -130,13 +145,11 @@ export function ReviewFormModal({
               selectedTags={selectedTags}
               setSelectedTags={setSelectedTags}
             />
-            <button
-              disabled={hooks.loading}
-              className="w-full justify-center rounded-lg bg-orange-500 px-5 py-3 text-center text-lg font-medium text-white hover:bg-orange-800 focus:outline-none focus:ring-4 focus:ring-blue-300 dark:bg-orange-600 dark:hover:bg-orange-700 dark:focus:ring-orange-800 flex flex-row gap-2 items-center"
-              type="submit"
-            >
-              <span>Post</span>
-            </button>
+            <CustomButton
+              label="Post"
+              disabled={hooks.loading || !isValid}
+              loading={hooks.loading}
+            />
           </form>
         </Modal.Body>
       </Modal>

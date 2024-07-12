@@ -62,7 +62,7 @@ export function DestinationDetailPage(props: DestinationDetailPageProps) {
         <p className="text-xs text-gray-500 dark:text-gray-400">
           {props.detail.description}
         </p>
-        <div className="text-sm flex flex-row items-start gap-2 w-full">
+        <div className="text-sm flex flex-row items-start gap-2 w-full mb-2">
           <FaMapPin className="flex-shrink-0 w-4" />
           <p className="text-sm">{props.detail.address}</p>
         </div>
