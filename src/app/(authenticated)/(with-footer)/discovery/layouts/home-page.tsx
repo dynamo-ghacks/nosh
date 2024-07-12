@@ -6,9 +6,14 @@ import Chat from '../components/chat-components';
 import RestaurantCard from '../components/restaurant-cards';
 
 const HomePage = (
-    { userProfileUrl, username, userTags }: {
+    { userProfileUrl, username, userTags, recommendedRestaurant, nearestRestaurants }: {
         userProfileUrl: string, username: string,
-        userTags: string[]
+        userTags: string[], recommendedRestaurant: {
+            name: string, location: string, image: string, destinationTags: string[], userTags: string[], isHighlighted?: boolean,
+        },
+        nearestRestaurants: {
+            name: string, location: string, image: string, destinationTags: string[], userTags: string[], isHighlighted?: boolean,
+        }[] 
     }
 ) => {
     const [open, setOpen] = useState(false);
@@ -173,22 +178,32 @@ const HomePage = (
                                 {/* Recommended section */}
                                 <h3 className="text-lg font-semibold mb-2 mt-8">Recommended for you</h3>
                                 <RestaurantCard
-                                    name='Khalid'
-                                    location='Jl. Setiabudi No. 20, Jakarta Selatan'
-                                    image='/images/login-avatar.svg'
-                                    destinationTags={['Gluten-Free Options', 'Vegetarian Friendly', 'Great Atmosphere']}
-                                    userTags={userTags}
+                                    name={recommendedRestaurant.name}
+                                    location={recommendedRestaurant.location}
+                                    image={recommendedRestaurant.image}
+                                    destinationTags={recommendedRestaurant.destinationTags}
+                                    userTags={recommendedRestaurant.userTags}
                                     isHighlighted={true}
                                 />
 
                                 <h3 className="text-lg font-semibold mb-2 mt-6">Nearest to you</h3>
-                                <RestaurantCard
+                                {/* <RestaurantCard
                                     name='Khalid'
                                     location='Jl. Setiabudi No. 20, Jakarta Selatan'
                                     image='/images/login-avatar.svg'
                                     destinationTags={['Gluten-Free Options', 'Vegetarian Friendly', 'Great Atmosphere']}
                                     userTags={userTags}
-                                />
+                                /> */}
+                                {nearestRestaurants.map((restaurant, index) => (
+                                    <RestaurantCard
+                                        key={index}
+                                        name={restaurant.name}
+                                        location={restaurant.location}
+                                        image={restaurant.image}
+                                        destinationTags={restaurant.destinationTags}
+                                        userTags={restaurant.userTags}
+                                    />
+                                ))}
                             </div>
                         </Drawer.Content>
                     </Drawer.Portal>

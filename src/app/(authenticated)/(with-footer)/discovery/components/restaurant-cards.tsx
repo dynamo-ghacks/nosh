@@ -8,7 +8,7 @@ const RestaurantCard = ({ name, location, image, destinationTags, userTags, isHi
         <div className={`${
             isHighlighted ? 'bg-orange-100' : 'bg-white'
         } p-2
-        rounded-lg overflow-hidden shadow-md`}>
+        rounded-lg overflow-hidden shadow-md mb-6`}>
             <div className="relative h-48">
                 <Image
                     src={image}
@@ -31,10 +31,11 @@ const RestaurantCard = ({ name, location, image, destinationTags, userTags, isHi
                     highlightedBgColor='bg-orange-500'
                     highlightedTextColor='text-white'
                     nonHighlightedTextColor='text-orange-500'
+                    maxTags={1}
                     />
                 </div>
                 <button className="bg-white rounded-md py-2 px-3 w-full text-orange-500 mt-2">
-                    View Detail...
+                    View Detail
                 </button>
             </div>
         </div>
