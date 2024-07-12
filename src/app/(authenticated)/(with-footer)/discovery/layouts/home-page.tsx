@@ -4,15 +4,16 @@ import { Drawer } from "vaul";
 import { GoogleMap, Marker, useJsApiLoader } from '@react-google-maps/api';
 import Chat from '../components/chat-components';
 import RestaurantCard from '../components/restaurant-cards';
+import { useRouter } from 'next/navigation';
 
 const HomePage = (
     { userProfileUrl, username, userTags, recommendedRestaurant, nearestRestaurants }: {
         userProfileUrl: string, username: string,
         userTags: string[], recommendedRestaurant: {
-            name: string, location: string, image: string, destinationTags: string[], userTags: string[], isHighlighted?: boolean,
+            id: string, name: string, location: string, image: string, destinationTags: string[], userTags: string[], isHighlighted?: boolean,
         },
         nearestRestaurants: {
-            name: string, location: string, image: string, destinationTags: string[], userTags: string[], isHighlighted?: boolean,
+            id: string, name: string, location: string, image: string, destinationTags: string[], userTags: string[], isHighlighted?: boolean,
         }[] 
     }
 ) => {
@@ -20,6 +21,7 @@ const HomePage = (
     const [currentLocation, setCurrentLocation] = useState<google.maps.LatLngLiteral | null>(null);
     const [selectedLocation, setSelectedLocation] = useState<google.maps.LatLngLiteral | null>(null);
     const mapRef = useRef<google.maps.Map | null>(null);
+    const router = useRouter();
 
     const { isLoaded } = useJsApiLoader({
         id: 'google-map-script',
@@ -86,8 +88,7 @@ const HomePage = (
     };
 
     return (
-        <div className="relative min-h-screen bg-gray-100 pb-20">
-            {/* Map background */}
+        <div className="relative max-h-screen bg-gray-100 pb-20">
             <div className="absolute inset-0 bg-blue-100">
                 <div className="absolute inset-0">
                     {isLoaded ? (
@@ -119,21 +120,19 @@ const HomePage = (
                 </div>
             </div>
 
-            {/* Floating content */}
             <div className="relative z-10 flex flex-col min-h-screen text-black">
-                {/* Back navigation */}
                 <div className="p-4">
-                    <button className="p-2 rounded-full bg-white shadow">
-                        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <button className="p-2 rounded-full bg-white shadow z-50"
+                    onClick={() => router.back()}
+                    >
+                        <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
                         </svg>
                     </button>
                 </div>
 
-                {/* Spacer to push content to bottom */}
                 <div className="flex-grow"></div>
 
-                {/* Drawer component */}
                 <Drawer.Root open={open} onClose={
                     () => setOpen(false)
                 }>
@@ -165,7 +164,6 @@ const HomePage = (
                                     userTags={userTags}
                                 />
 
-                                {/* Search input */}
                                 <div className="relative mb-4">
                                     <input
                                         type="text"
@@ -175,7 +173,6 @@ const HomePage = (
                                     <svg className="w-6 h-6 text-gray-400 absolute right-3 top-2" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none" /><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z" /></svg>
                                 </div>
 
-                                {/* Recommended section */}
                                 <h3 className="text-lg font-semibold mb-2 mt-8">Recommended for you</h3>
                                 <RestaurantCard
                                     name={recommendedRestaurant.name}
@@ -184,16 +181,10 @@ const HomePage = (
                                     destinationTags={recommendedRestaurant.destinationTags}
                                     userTags={recommendedRestaurant.userTags}
                                     isHighlighted={true}
+                                    viewDetailUrl={`/destination/${recommendedRestaurant.id}`}
                                 />
 
                                 <h3 className="text-lg font-semibold mb-2 mt-6">Nearest to you</h3>
-                                {/* <RestaurantCard
-                                    name='Khalid'
-                                    location='Jl. Setiabudi No. 20, Jakarta Selatan'
-                                    image='/images/login-avatar.svg'
-                                    destinationTags={['Gluten-Free Options', 'Vegetarian Friendly', 'Great Atmosphere']}
-                                    userTags={userTags}
-                                /> */}
                                 {nearestRestaurants.map((restaurant, index) => (
                                     <RestaurantCard
                                         key={index}
@@ -202,6 +193,7 @@ const HomePage = (
                                         image={restaurant.image}
                                         destinationTags={restaurant.destinationTags}
                                         userTags={restaurant.userTags}
+                                        viewDetailUrl={`/destination/${restaurant.id}`}
                                     />
                                 ))}
                             </div>

@@ -22,7 +22,8 @@ export default async function pages(){
                 image: newestDestination?.image!,
                 destinationTags: newestDestination?.tags!,
                 userTags: session?.user?.tags!,
-                isHighlighted: true
+                isHighlighted: true,
+                id: newestDestination?.id!
             }
         }
         nearestRestaurants={allDestinations.map(destination => ({
@@ -31,7 +32,8 @@ export default async function pages(){
             image: destination.image || "/images/restaurant-sign.png",
             destinationTags: destination.tags,
             userTags: session?.user?.tags!,
-            isHighlighted: false
+            isHighlighted: false,
+            id: destination.id
         }))
         }
         />

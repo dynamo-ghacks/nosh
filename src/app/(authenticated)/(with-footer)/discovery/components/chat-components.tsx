@@ -6,7 +6,7 @@ import RestaurantCard from './restaurant-cards';
 const ChatBubble = ({ message, isUser, userProfileUrl, userTags, restaurant }:
     {
         message: string, isUser: boolean,
-        userProfileUrl: string, userTags: string[], restaurant?: { name: string, location: string, image: string, destinationTags: string[], userTags: string[] }
+        userProfileUrl: string, userTags: string[], restaurant?: { name: string, location: string, image: string, destinationTags: string[], userTags: string[], id: string }
     }
 ) => (
     <div className={`flex ${isUser ? 'flex-row-reverse' : 'flex-row'} items-end mt-4`}>
@@ -25,6 +25,7 @@ const ChatBubble = ({ message, isUser, userProfileUrl, userTags, restaurant }:
                 image={restaurant.image}
                 destinationTags={restaurant.destinationTags}
                 userTags={restaurant.userTags}
+                viewDetailUrl={`/destination/${restaurant.id}`}
             /> : <p>{message}</p>}
             
         </div>

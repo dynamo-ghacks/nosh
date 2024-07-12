@@ -1,9 +1,11 @@
 import { TagView } from '@/components/tag/tag-view';
 import Image from 'next/image';
+import { useRouter } from 'next/navigation';
 
-const RestaurantCard = ({ name, location, image, destinationTags, userTags, isHighlighted = false }:
-    { name: string, location: string, image: string, destinationTags: string[], userTags: string[], isHighlighted?: boolean}
+const RestaurantCard = ({ name, location, image, destinationTags, userTags, isHighlighted = false, viewDetailUrl }:
+    { name: string, location: string, image: string, destinationTags: string[], userTags: string[], isHighlighted?: boolean, viewDetailUrl: string}
 ) => {
+    const router = useRouter();
     return (
         <div className={`${
             isHighlighted ? 'bg-orange-100' : 'bg-white'
@@ -27,14 +29,18 @@ const RestaurantCard = ({ name, location, image, destinationTags, userTags, isHi
                 </p>
                 <div className="flex flex-row flex-wrap gap-2">
                     <TagView userTags={userTags} destTags={destinationTags}
-                    nonHighlightedBgColor='bg-white'
+                    nonHighlightedBgColor={isHighlighted ? 'bg-orange-100' : 'bg-white'}
                     highlightedBgColor='bg-orange-500'
                     highlightedTextColor='text-white'
                     nonHighlightedTextColor='text-orange-500'
-                    maxTags={1}
+                    maxTags={3}
                     />
                 </div>
-                <button className="bg-white rounded-md py-2 px-3 w-full text-orange-500 mt-2">
+                <button className={`${
+                    isHighlighted ? 'bg-white text-orange-500' : 'border-orange-400 text-white'
+                }bg-white rounded-md py-2 px-3 w-full mt-4 border-2`}
+                onClick={() => router.push(viewDetailUrl)}
+                >
                     View Detail
                 </button>
             </div>
