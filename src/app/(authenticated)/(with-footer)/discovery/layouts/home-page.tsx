@@ -81,7 +81,7 @@ const HomePage = (
     };
 
     return (
-        <div className="relative min-h-screen bg-gray-100">
+        <div className="relative min-h-screen bg-gray-100 pb-20">
             {/* Map background */}
             <div className="absolute inset-0 bg-blue-100">
                 <div className="absolute inset-0">
