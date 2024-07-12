@@ -1,150 +1,63 @@
 "use client";
 
 import React from "react";
-import InfiniteScroll from "react-infinite-scroll-component";
-import { getReviewByDestination } from "../actions/destination.action";
 import { ReviewItemCard } from "./review-item-card";
-import { DefaultUser } from "next-auth";
+import { useDestinationDetail } from "../hooks/useDestinationDetail";
+import { FaPlus } from "react-icons/fa";
+import { ReviewFormModal } from "./add-review-section/review-form";
 
-interface Review {
-  id: string;
-  title: string;
-  body: string;
-  tags: string[];
-  user: {
-    id: string;
-    name: string | null;
-    image: string | null;
-    email: string | null;
-  };
-  createdAt: Date;
-  updatedAt: Date;
-}
 export function ReviewSection({
-  destinationId,
-  user,
-  reviews,
-  meta,
-  userReview,
+  hooks,
 }: {
-  destinationId: string;
-  user?:
-    | (DefaultUser & {
-        tags?: string[];
-      })
-    | null;
-  reviews: Review[];
-  meta: {
-    page: number;
-    take: number;
-    nextPage: number | null;
-    count: number;
-  };
-  userReview?: Review | null;
+  hooks: ReturnType<typeof useDestinationDetail>;
 }) {
-  const [_userReview, setUserReview] = React.useState(userReview ?? null);
-  const [_reviews, setReviews] = React.useState(reviews ?? []);
-  const [_meta, setMeta] = React.useState(
-    meta ?? { page: 1, take: 10, nextPage: 2, count: 0 }
-  );
-
-  console.log(_reviews.length, _meta.page * 10);
-
-  async function fetchData() {
-    try {
-      if (!_meta.nextPage) return;
-
-      const result = await getReviewByDestination(
-        destinationId,
-        _meta.nextPage,
-        _meta.take
-      );
-
-      console.log(result);
-      if (result.success) {
-        setReviews((prevReviews) => [
-          ...prevReviews,
-          ...(result.data?.data ?? []),
-        ]);
-        setMeta({
-          page: result.data?.meta.page ?? 1,
-          take: result.data?.meta.take ?? 10,
-          nextPage: result.data?.meta.nextPage ?? null,
-          count: result.data?.meta.count ?? 0,
-        });
-      }
-    } catch (err) {
-      console.error(err);
-    }
-  }
-
-  async function refresh() {
-    try {
-      const result = await getReviewByDestination(destinationId, 1, _meta.take);
-      console.log(result);
-      if (result.success) {
-        setReviews(result.data?.data ?? []);
-        setMeta({
-          page: result.data?.meta.page ?? 1,
-          take: result.data?.meta.take ?? 10,
-          nextPage: result.data?.meta.nextPage ?? null,
-          count: result.data?.meta.count ?? 0,
-        });
-        setUserReview(result.data?.userReview ?? null);
-      }
-    } catch (err) {}
-  }
+  const { reviews: _reviews, userReview: _userReview, user } = hooks;
 
   return (
-    <div
-      id="scrollableDiv"
-      className="h-[100svh] overflow-y-auto hide-scrollbar"
-    >
-      <InfiniteScroll
-        dataLength={10 * _meta.page}
-        next={fetchData}
-        hasMore={!!_meta.nextPage}
-        loader={<h4>Loading...</h4>}
-        endMessage={
-          <p style={{ textAlign: "center" }}>
-            <b>Yay! You have seen it all</b>
-          </p>
-        }
-        refreshFunction={refresh}
-        pullDownToRefresh
-        pullDownToRefreshThreshold={50}
-        pullDownToRefreshContent={
-          <h3 style={{ textAlign: "center" }}>&#8595; Pull down to refresh</h3>
-        }
-        releaseToRefreshContent={
-          <h3 style={{ textAlign: "center" }}>&#8593; Release to refresh</h3>
-        }
-        height={"100svh"}
-        className="hide-scrollbar flex flex-col gap-4"
-      >
+    <>
+      <div id="scrollableDiv" className="overflow-y-auto hide-scrollbar">
         {_userReview && (
           <ReviewItemCard
             key={"user"}
             userTags={user?.tags ?? []}
             review={_userReview}
             isUser
-            destinationId={destinationId}
+            hooks={hooks}
           />
         )}
-        {_reviews.map((review, index) => {
+        {_reviews.map((review) => {
           if (review.user.email === user?.email) {
             return <></>;
           }
           return (
             <ReviewItemCard
-              key={index}
+              key={review.id}
               userTags={user?.tags ?? []}
               review={review}
-              destinationId={destinationId}
+              hooks={hooks}
             />
           );
         })}
-      </InfiniteScroll>
-    </div>
+      </div>
+      {!_userReview && (
+        <>
+          <div className="w-full bg-white flex justify-around items-center py-4 fixed bottom-0 left-0 right-0 max-w-md mx-auto z-10 px-6">
+            <button
+              className="w-full justify-center rounded-lg bg-orange-500 px-5 py-3 text-center text-lg font-medium text-white hover:bg-orange-800 focus:outline-none focus:ring-4 focus:ring-blue-300 dark:bg-orange-600 dark:hover:bg-orange-700 dark:focus:ring-orange-800 flex flex-row gap-2 items-center"
+              onClick={() =>
+                hooks.setModal({
+                  show: true,
+                  defaultValues: undefined,
+                })
+              }
+            >
+              <span>Add Your Review</span>
+              <FaPlus />
+            </button>
+          </div>
+        </>
+      )}
+      <ReviewFormModal hooks={hooks} />
+    </>
   );
 }

@@ -1,37 +1,22 @@
-import React, { useState } from "react";
+import React from "react";
 import { Avatar, Card } from "flowbite-react";
 import { stringAvatar } from "../../../../../utils/string-avatar";
 import { format } from "date-fns";
 import { TagView } from "../../../../../components/tag/tag-view";
-import { ReviewFormModal } from "./add-review-section/review-form";
+import { Review } from "../types/destination.type";
+import { useDestinationDetail } from "../hooks/useDestinationDetail";
 
 export function ReviewItemCard({
   userTags,
   review,
-  destinationId,
   isUser = false,
-  setUserReview = () => {},
+  hooks,
 }: {
   userTags: string[];
-  review: {
-    id: string;
-    title: string;
-    body: string;
-    tags: string[];
-    user: {
-      id: string;
-      name: string | null;
-      image: string | null;
-    };
-    createdAt: Date;
-    updatedAt: Date;
-  };
+  review: Review;
   isUser?: boolean;
-  destinationId: string;
-  setUserReview?: (review: any) => void;
+  hooks: ReturnType<typeof useDestinationDetail>;
 }) {
-  const [showModal, setShowModal] = useState(false);
-
   return (
     <Card className="border border-orange-500 rounded-2xl shadow-orange-50">
       <div className="flex flex-row items-center justify-between">
@@ -62,21 +47,17 @@ export function ReviewItemCard({
         <>
           <div className="flex flex-row justify-end gap-2">
             <button
-              onClick={() => setShowModal(true)}
+              onClick={() =>
+                hooks.setModal({
+                  show: true,
+                  defaultValues: review,
+                })
+              }
               className="px-2 h-10 rounded-lg min-w-20 bg-orange-100 text-orange-500 hover:text-orange-800 focus:outline-none"
             >
               Edit
             </button>
           </div>
-          {isUser && (
-            <ReviewFormModal
-              showModal={showModal}
-              setShowModal={setShowModal}
-              destinationId={destinationId}
-              user={review.user}
-              defaultValues={review}
-            />
-          )}
         </>
       )}
     </Card>

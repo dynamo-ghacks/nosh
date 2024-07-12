@@ -90,7 +90,7 @@ model Authenticator {
 
 model Destination {
   id          String   @id @default(cuid())
-  name        String
+  name        String   @unique
   headline    String
   description String
   latitude    Float

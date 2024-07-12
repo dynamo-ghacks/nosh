@@ -1,9 +1,9 @@
 "use client";
 
 import React from "react";
-import { GoogleMap, LoadScript, Marker } from "@react-google-maps/api";
-import { googleMapsConfig } from "../../utils/googleMapsConfig";
-import { env } from "@/env";
+import { GoogleMap, Marker } from "@react-google-maps/api";
+import { useGoogleMapAPI } from "@/hooks/useGoogleMapAPI";
+import { FaRegCircle } from "react-icons/fa";
 
 const options = {
   disableDefaultUI: true,
@@ -21,17 +21,25 @@ const MapMarked = ({
   };
   containerStyle: React.CSSProperties;
 }) => {
+  const { isLoaded } = useGoogleMapAPI();
+
+  if (!isLoaded) {
+    return (
+      <div className="bg-gray-300 aspect-[3 / 2] rounded-lg h-[200px] w-full flex items-center justify-center">
+        <FaRegCircle className="text-gray-400 text-4xl" />
+      </div>
+    );
+  }
+
   return (
-    <LoadScript googleMapsApiKey={env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}>
-      <GoogleMap
-        mapContainerStyle={containerStyle}
-        center={center}
-        zoom={16}
-        options={options}
-      >
-        <Marker position={center} />
-      </GoogleMap>
-    </LoadScript>
+    <GoogleMap
+      mapContainerStyle={containerStyle}
+      center={center}
+      zoom={16}
+      options={options}
+    >
+      <Marker position={center} />
+    </GoogleMap>
   );
 };
 

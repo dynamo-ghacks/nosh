@@ -21,11 +21,13 @@ export function SearchDestinationDrawer({
     { name: string; address: string; description: string }[]
   >([]);
   const { isLoaded, location } = hook;
+  const [loading, setLoading] = useState(false);
 
   const fetchPlaces = useCallback(() => {
     if (inputValue.length < 3 || !isLoaded) return;
 
     const service = new google.maps.places.AutocompleteService();
+    setLoading(true);
     service.getPlacePredictions(
       {
         input: inputValue,
@@ -45,6 +47,7 @@ export function SearchDestinationDrawer({
           }));
           setPlaces(results);
         }
+        setLoading(false);
       }
     );
   }, [inputValue, isLoaded]);
@@ -85,6 +88,7 @@ export function SearchDestinationDrawer({
         position="bottom"
         className="max-w-md mx-auto h-[100svh]"
       >
+        <Drawer.Header title="" className="hidden" />
         <Drawer.Items>
           <button
             type="button"
@@ -107,31 +111,41 @@ export function SearchDestinationDrawer({
                 fetchPlaces();
               }
             }}
+            disabled={loading}
           />
 
-          {places.length > 0 ? (
-            <div className="flex flex-col gap-4">
-              {places.map((place, index) => (
-                <Card
-                  className="text-black border border-orange-500 rounded-2xl shadow-orange-50 hover:cursor-pointer hover:bg-orange-100 hover:shadow-sm hover:shadow-orange-100"
-                  key={index}
-                  onClick={() => {
-                    onClose();
-                    handleSelect(place);
-                  }}
-                >
-                  <div className="flex flex-col gap-2">
-                    <p>{place.name}</p>
-                    <p className="text-gray-500 text-sm">{place.address}</p>
-                  </div>
-                </Card>
-              ))}
+          {loading && (
+            <div role="status" className="w-full animate-pulse">
+              <div className="h-[200px] bg-gray-200 rounded-2xl dark:bg-gray-700 w-full mb-4"></div>
+              <div className="h-[200px] bg-gray-200 rounded-2xl dark:bg-gray-700 w-full mb-4"></div>
+              <span className="sr-only">Loading...</span>
             </div>
-          ) : (
-            <p className="text-gray-800 text-lg text-center">
-              No results found
-            </p>
           )}
+
+          {!loading &&
+            (places.length > 0 ? (
+              <div className="flex flex-col gap-4">
+                {places.map((place, index) => (
+                  <Card
+                    className="text-black border border-orange-500 rounded-2xl shadow-orange-50 hover:cursor-pointer hover:bg-orange-100 hover:shadow-sm hover:shadow-orange-100"
+                    key={index}
+                    onClick={() => {
+                      onClose();
+                      handleSelect(place);
+                    }}
+                  >
+                    <div className="flex flex-col gap-2">
+                      <p>{place.name}</p>
+                      <p className="text-gray-500 text-sm">{place.address}</p>
+                    </div>
+                  </Card>
+                ))}
+              </div>
+            ) : (
+              <p className="text-gray-800 text-lg text-center">
+                No results found
+              </p>
+            ))}
         </Drawer.Items>
       </Drawer>
     </>

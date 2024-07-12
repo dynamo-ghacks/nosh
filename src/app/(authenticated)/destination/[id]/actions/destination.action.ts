@@ -27,8 +27,6 @@ export async function getDestination(id: string) {
           tags: true,
           image: true,
           Review: {
-            take: 10,
-            skip: 0,
             orderBy: {
               updatedAt: "desc",
             },
@@ -91,7 +89,7 @@ export async function getDestination(id: string) {
           data: result?.Review ?? [],
           meta: {
             page: 1,
-            take: 10,
+            take: reviewCount,
             nextPage: (result?.Review?.length ?? 0) >= 10 ? 2 : null,
             count: reviewCount,
           },
@@ -209,17 +207,24 @@ export async function addReview(
   }
 ) {
   try {
-    const check = await prisma.review.findFirst({
-      where: {
-        destinationId,
-        user: {
-          email,
+    const [check, destination] = await Promise.all([
+      prisma.review.findFirst({
+        where: {
+          destinationId,
+          user: {
+            email,
+          },
         },
-      },
-      select: {
-        id: true,
-      },
-    });
+        select: {
+          id: true,
+        },
+      }),
+      prisma.destination.findUnique({
+        where: {
+          id: destinationId,
+        },
+      }),
+    ]);
 
     let result;
     if (check) {
@@ -254,6 +259,19 @@ export async function addReview(
             connect: {
               email,
             },
+          },
+        },
+      });
+    }
+
+    if (destination) {
+      await prisma.destination.update({
+        where: {
+          id: destinationId,
+        },
+        data: {
+          tags: {
+            set: Array.from(new Set([...destination.tags, ...data.tags])),
           },
         },
       });

@@ -12,25 +12,16 @@ import { CustomTagSelect } from "@/components/form/custom-tag-select";
 import { TextInput } from "flowbite-react";
 import { HiSearch } from "react-icons/hi";
 import { SearchDestinationDrawer } from "./search-destination-drawer";
-import {
-  GoogleMap,
-  Libraries,
-  LoadScript,
-  Marker,
-} from "@react-google-maps/api";
+import { GoogleMap, Marker } from "@react-google-maps/api";
 import { useCreateDestination } from "../hooks/useCreateDestionation";
 import { MapPicker } from "./map-picker";
-import { env } from "@/env";
 import { useRouter } from "next/navigation";
-
-const libraries: Libraries = ["places"];
 
 export function NewDestinationForm() {
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const router = useRouter();
   const hook = useCreateDestination();
-  const { view, setView, isLoaded, setIsLoaded, location, selectedPlace } =
-    hook;
+  const { view, setView, isLoaded, location, selectedPlace } = hook;
   const { control, handleSubmit, reset, setValue } = useForm<CreateDestination>(
     {
       resolver: zodResolver(createDestinationSchema),
@@ -71,36 +62,34 @@ export function NewDestinationForm() {
     } catch (err) {}
   };
   return (
-    <LoadScript
-      googleMapsApiKey={env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}
-      libraries={libraries}
-      onLoad={() => setIsLoaded(true)}
-    >
+    <div>
       {view === null && (
         <form
           onSubmit={handleSubmit(_onSubmit)}
           className="flex flex-col gap-4"
         >
-          <GoogleMap
-            mapContainerStyle={{
-              width: "100%",
-              height: "120px",
-              borderRadius: "16px",
-            }}
-            center={location}
-            zoom={16}
-            options={{
-              disableDefaultUI: true,
-              mapTypeControl: false,
-              streetViewControl: false,
-            }}
-            onClick={() => {
-              setView("map");
-            }}
-            onLoad={onLoad}
-          >
-            <Marker position={location} />
-          </GoogleMap>
+          {isLoaded && (
+            <GoogleMap
+              mapContainerStyle={{
+                width: "100%",
+                height: "120px",
+                borderRadius: "16px",
+              }}
+              center={location}
+              zoom={16}
+              options={{
+                disableDefaultUI: true,
+                mapTypeControl: false,
+                streetViewControl: false,
+              }}
+              onClick={() => {
+                setView("map");
+              }}
+              onLoad={onLoad}
+            >
+              <Marker position={location} />
+            </GoogleMap>
+          )}
           <TextInput
             type="text"
             placeholder="Search for a destination"
@@ -163,14 +152,16 @@ export function NewDestinationForm() {
         </form>
       )}
 
-      {view === "map" && <MapPicker {...hook} />}
+      {isLoaded && view === "map" && <MapPicker {...hook} />}
 
-      <SearchDestinationDrawer
-        // center={center}
-        open={view === "search"}
-        onClose={() => setView(null)}
-        hook={hook}
-      />
-    </LoadScript>
+      {isLoaded && (
+        <SearchDestinationDrawer
+          // center={center}
+          open={view === "search"}
+          onClose={() => setView(null)}
+          hook={hook}
+        />
+      )}
+    </div>
   );
 }
