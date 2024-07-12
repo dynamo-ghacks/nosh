@@ -50,6 +50,9 @@ export const authOptions: NextAuthOptions = {
       }
       return session;
     },
+    async redirect({ baseUrl }) {
+      return `${baseUrl}`;
+    },
   },
   pages: {
     signIn: "/auth/sign-in",
