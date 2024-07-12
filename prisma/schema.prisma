@@ -90,14 +90,14 @@ model Authenticator {
 
 model Destination {
   id          String   @id @default(cuid())
-  name        String
+  name        String   @unique
   headline    String
   description String
   latitude    Float
   longitude   Float
   address     String
   tags        String[]
-  isVerified  Boolean
+  isVerified  Boolean  @default(false)
   image       String?
 
   Review Review[]

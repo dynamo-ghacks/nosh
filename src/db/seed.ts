@@ -20,6 +20,22 @@ async function main() {
     },
   });
 
+  const destination2 = await _prisma.destination.create({
+    data: {
+      name: "Nancy",
+      headline: "A verified halal restaurant in Jakarta",
+      description:
+        "Halal Restaurant in Jakarta Halal Restaurant in Jakarta. Halal Restaurant in Jakarta.",
+      latitude: -6.248261439722531,
+      longitude: 106.61081185982164,
+      address: "Jl. Setiabudi No. 20, Jakarta Selatan",
+      tags: ["Diabetes", "Gluten Free"],
+      isVerified: true,
+      image:
+        "https://upload.wikimedia.org/wikipedia/commons/3/3c/Vue_de_nuit_de_la_Place_Stanislas_%C3%A0_Nancy.jpg",
+    },
+  });
+
   const reviews = [];
   for (let i = 0; i < 20; i++) {
     const user = await _prisma.user.create({

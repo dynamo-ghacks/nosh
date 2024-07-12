@@ -25,7 +25,7 @@ export function OnboardingPage({ email }: { email: string }) {
     try {
       const res = await onboardingUser(email, selectedTags);
       if (res.success) {
-        router.replace("/home");
+        router.replace("/discovery");
       }
     } catch (err) {
       console.log(err);

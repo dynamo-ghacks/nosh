@@ -1,92 +1,100 @@
 "use client";
 
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Modal, Avatar } from "flowbite-react";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { ReviewFormData, reviewSchema } from "./schema";
-import { tags } from "@/constant/tags";
+import { ReviewFormData, reviewSchema } from "../../schema";
 import { stringAvatar } from "@/utils/string-avatar";
 import { addReview } from "../../actions/destination.action";
 import { CustomInput } from "@/components/form/custom-input";
 import { CustomTextarea } from "@/components/form/custom-textarea";
+import { CustomTagSelect } from "@/components/form/custom-tag-select";
+import { useDestinationDetail } from "../../hooks/useDestinationDetail";
+import { CustomButton } from "@/components/ui/custom-button";
 
 export function ReviewFormModal({
-  showModal,
-  setShowModal,
-  destinationId,
-  user,
-  defaultValues,
-  onSubmit,
+  hooks,
 }: {
-  showModal: boolean;
-  setShowModal: (show: boolean) => void;
-  destinationId: string;
-  user: {
-    email?: string | null;
-    name?: string | null;
-    image?: string | null;
-  };
-  defaultValues?: {
-    title: string;
-    body: string;
-    tags: string[];
-  };
-  onSubmit?: (data: ReviewFormData) => void;
+  hooks: ReturnType<typeof useDestinationDetail>;
 }) {
-  const [tagOptions, setTagOptions] = useState<string[]>(tags);
+  const { user, destination, modal } = hooks;
   const [selectedTags, setSelectedTags] = useState<string[]>(
-    defaultValues?.tags ?? []
+    modal.defaultValues?.tags ?? []
   );
-  const [inputValue, setInputValue] = useState("");
-
-  const { control, handleSubmit, reset } = useForm<ReviewFormData>({
+  const {
+    control,
+    reset,
+    setValue,
+    formState: { isValid },
+    getValues,
+  } = useForm<ReviewFormData>({
     resolver: zodResolver(reviewSchema),
-    defaultValues: defaultValues ?? {
+    defaultValues: modal.defaultValues ?? {
       title: "",
       body: "",
       tags: [],
     },
+    mode: "onChange",
   });
 
-  const handleTagChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const value = event.target.value;
-    setInputValue(value);
-  };
-
-  const handleTagSelect = (tag: string) => {
-    if (!selectedTags.find((t) => t === tag)) {
-      setSelectedTags([...selectedTags, tag]);
+  useEffect(() => {
+    if (modal.defaultValues) {
+      setValue("body", modal.defaultValues.body);
+      setValue("title", modal.defaultValues.title);
+      setValue("tags", modal.defaultValues.tags);
+      setSelectedTags(modal.defaultValues.tags);
+    } else {
+      reset();
     }
-    setInputValue("");
-  };
+  }, [modal.defaultValues]);
 
-  const handleTagRemove = (tag: string) => {
-    setSelectedTags(selectedTags.filter((t) => t !== tag));
-    setTagOptions([...tagOptions, tag]);
-  };
+  if (!user || !destination) return <></>;
 
   const _onSubmit: SubmitHandler<ReviewFormData> = async (data) => {
     try {
       if (!user.email) return;
 
-      const result = await addReview(user.email, destinationId, {
+      hooks.setLoading(true);
+      const result = await addReview(user.email, destination.id, {
         ...data,
         tags: selectedTags,
       });
 
-      if (onSubmit) {
-        onSubmit(data);
+      if (result.data) {
+        hooks.setUserReview({
+          ...result.data,
+          user: {
+            email: user?.email,
+            image: user?.image,
+            name: user?.name,
+          },
+        });
       }
-      setShowModal(false);
+
+      hooks.setLoading(false);
+      hooks.setModal({
+        show: false,
+      });
       reset();
-    } catch (err) {}
+    } catch (err) {
+    } finally {
+      hooks.setLoading(false);
+    }
   };
 
   return (
     <>
-      <Modal show={showModal} onClose={() => setShowModal(false)} size="md">
-        <Modal.Header>
+      <Modal
+        show={hooks.modal.show}
+        onClose={() =>
+          hooks.setModal({
+            show: false,
+          })
+        }
+        size="md"
+      >
+        <Modal.Header title="">
           <div className="flex flex-row items-center justify-between">
             {user.image ? (
               <Avatar
@@ -113,7 +121,14 @@ export function ReviewFormModal({
         </Modal.Header>
         <Modal.Body className="hide-scrollbar min-h-96">
           <form
-            onSubmit={handleSubmit(_onSubmit)}
+            onSubmit={(e) => {
+              e.preventDefault();
+              _onSubmit({
+                title: getValues("title"),
+                body: getValues("body"),
+                tags: getValues("tags"),
+              });
+            }}
             className="flex flex-col gap-4"
           >
             <CustomInput
@@ -126,56 +141,15 @@ export function ReviewFormModal({
               control={control}
               placeholder="Leave a comment..."
             />
-            <div className="relative">
-              <input
-                type="text"
-                placeholder="Search tags..."
-                className="block w-full border disabled:cursor-not-allowed disabled:opacity-50 border-orange-500 bg-orange-50 text-gray-900 focus:border-orange-500 focus:ring-orange-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-orange-500 dark:focus:ring-orange-500 p-2.5 text-sm rounded-lg"
-                value={inputValue}
-                onChange={handleTagChange}
-                disabled={selectedTags.length === 7}
-              />
-              {inputValue && selectedTags.length < 7 && (
-                <ul className=" absolute top-12 z-10 w-full bg-white text-black border rounded-lg shadow-sm max-h-32 overflow-auto text-sm">
-                  {tagOptions.map((option) =>
-                    selectedTags.includes(option) ? (
-                      <></>
-                    ) : (
-                      <li
-                        key={option}
-                        className="p-2 hover:bg-orange-100 cursor-pointer"
-                        onClick={() => handleTagSelect(option)}
-                      >
-                        {option}
-                      </li>
-                    )
-                  )}
-                </ul>
-              )}
-            </div>
-            <div className="flex flex-wrap gap-2 mb-4">
-              {selectedTags.map((tag) => (
-                <span
-                  key={tag}
-                  className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-orange-100 text-orange-800"
-                >
-                  {tag}
-                  <button
-                    type="button"
-                    className="ml-2 text-orange-600 hover:text-orange-800"
-                    onClick={() => handleTagRemove(tag)}
-                  >
-                    &times;
-                  </button>
-                </span>
-              ))}
-            </div>
-            <button
-              className="w-full justify-center rounded-lg bg-orange-500 px-5 py-3 text-center text-lg font-medium text-white hover:bg-orange-800 focus:outline-none focus:ring-4 focus:ring-blue-300 dark:bg-orange-600 dark:hover:bg-orange-700 dark:focus:ring-orange-800 flex flex-row gap-2 items-center"
-              type="submit"
-            >
-              <span>Post</span>
-            </button>
+            <CustomTagSelect
+              selectedTags={selectedTags}
+              setSelectedTags={setSelectedTags}
+            />
+            <CustomButton
+              label="Post"
+              disabled={hooks.loading || !isValid}
+              loading={hooks.loading}
+            />
           </form>
         </Modal.Body>
       </Modal>

@@ -14,21 +14,21 @@ export default async function Page() {
     redirect("/auth/login");
   }
 
-  // if (session?.user?.onboarding) {
-  //   redirect("/home");
-  // }
+  if (session?.user?.onboarding) {
+    redirect("/discovery");
+  }
 
   return (
     <div className="overflow-y-hidden relative h-full flex flex-col gap-4 min-h-screen bg-white p-6 py-10">
       <div className="flex flex-col items-start justify-start gap-4">
         <Link
-          href={"/auth/login"}
+          href={"/discovery"}
           className="text-gray-800 text-xl font-semibold text-left w-full"
         >
           <HiArrowLeft className="inline mr-2" />
         </Link>
         <h1 className="text-gray-800 text-xl font-semibold text-start">
-          Welcome, John!
+          Welcome, {session.user.name}
         </h1>
         <p className="text-[#878787] font-light">
           Let us know about your specific food hypersensitivity needs

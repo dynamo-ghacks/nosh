@@ -11,7 +11,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           className="text-gray-800 text-xl font-semibold text-left w-full"
         >
           <HiArrowLeft className="inline mr-4" />
-          Destination
+          Profile
         </Link>
       </div>
       <div className="overflow-y-auto hide-scrollbar">{children}</div>

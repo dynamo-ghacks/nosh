@@ -1,30 +1,26 @@
-"use client";
-
 import React from "react";
-import { GoogleMap, Marker } from "@react-google-maps/api";
-import { useGoogleMapAPI } from "@/hooks/useGoogleMapAPI";
 
-const options = {
-  disableDefaultUI: true,
-  mapTypeControl: false,
-  streetViewControl: false,
-};
+interface CustomButtonProps {
+  label: string;
+  size?: "sm" | "md";
+  disabled?: boolean;
+  loading?: boolean;
+  className?: string;
+}
 
-const MapMarked = ({
-  center,
-  containerStyle,
-}: {
-  center: {
-    lat: number;
-    lng: number;
-  };
-  containerStyle: React.CSSProperties;
-}) => {
-  const { isLoaded } = useGoogleMapAPI();
-
-  if (!isLoaded) {
-    return (
-      <div className="animate-pulse bg-gray-300 aspect-[3 / 2] rounded-lg h-[200px] w-full flex items-center justify-center">
+export function CustomButton(props: CustomButtonProps) {
+  return (
+    <button
+      {...props}
+      disabled={props.disabled || props.loading}
+      className={`${
+        props.size === "sm" && "h-[40px]"
+      } hover:cursor-pointer w-full justify-center rounded-lg bg-orange-500 px-5 py-3 text-center text-lg font-medium text-white hover:bg-orange-800 focus:outline-none focus:ring-4 focus:ring-blue-300 dark:bg-orange-600 dark:hover:bg-orange-700 dark:focus:ring-orange-800 flex flex-row gap-2 items-center disabled:opacity-50 disabled:cursor-not-allowed ${
+        props.className
+      }`}
+      type="submit"
+    >
+      {props.loading && (
         <div role="status">
           <svg
             aria-hidden="true"
@@ -44,20 +40,8 @@ const MapMarked = ({
           </svg>
           <span className="sr-only">Loading...</span>
         </div>
-      </div>
-    );
-  }
-
-  return (
-    <GoogleMap
-      mapContainerStyle={containerStyle}
-      center={center}
-      zoom={16}
-      options={options}
-    >
-      <Marker position={center} />
-    </GoogleMap>
+      )}
+      {!props.loading && <span>{props.label}</span>}
+    </button>
   );
-};
-
-export default MapMarked;
+}
