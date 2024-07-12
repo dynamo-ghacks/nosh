@@ -15,7 +15,7 @@ export function ReviewItemCard({
   userTags: string[];
   review: Review;
   isUser?: boolean;
-  hooks: ReturnType<typeof useDestinationDetail>;
+  hooks?: ReturnType<typeof useDestinationDetail>;
 }) {
   return (
     <Card className="border border-orange-500 rounded-2xl shadow-orange-50">
@@ -43,7 +43,7 @@ export function ReviewItemCard({
       </div>
       <div>{<TagView userTags={userTags} destTags={review.tags} />}</div>
       <p className="">{review.body}</p>
-      {isUser && (
+      {isUser && hooks && (
         <>
           <div className="flex flex-row justify-end gap-2">
             <button
