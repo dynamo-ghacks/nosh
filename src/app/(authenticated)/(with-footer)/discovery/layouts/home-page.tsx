@@ -3,9 +3,12 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Drawer } from "vaul";
 import { GoogleMap, Marker, useJsApiLoader } from '@react-google-maps/api';
 import Chat from '../components/chat-components';
+import RestaurantCard from '../components/restaurant-cards';
 
 const HomePage = (
-    { userProfileUrl, username }: { userProfileUrl: string, username: string }
+    { userProfileUrl, username, userTags }: { userProfileUrl: string, username: string,
+        userTags: string[]
+     }
 ) => {
     const [open, setOpen] = useState(false);
     const [currentLocation, setCurrentLocation] = useState<google.maps.LatLngLiteral | null>(null);
@@ -170,36 +173,13 @@ const HomePage = (
 
                                 {/* Recommended section */}
                                 <h3 className="text-lg font-semibold mb-2">Recommended for you</h3>
-                                <div className="bg-orange-400 rounded-lg overflow-hidden shadow-md">
-                                    <div className="h-24 bg-gray-300"></div>
-                                    <div className="p-4">
-                                        <h4 className="text-xl font-bold text-white mb-2">Khalid</h4>
-                                        <span>
-
-                                            <p className="text-white text-sm mb-2">Jl. Setiabudi No. 20, Jakarta Selatan</p>
-                                        </span>
-                                        <ul className="text-white">
-                                            <li className="flex items-center">
-                                                <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                                                </svg>
-                                                Gluten-Free Options
-                                            </li>
-                                            <li className="flex items-center">
-                                                <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                                                </svg>
-                                                Vegetarian Friendly
-                                            </li>
-                                            <li className="flex items-center">
-                                                <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                                                </svg>
-                                                Great Atmosphere
-                                            </li>
-                                        </ul>
-                                    </div>
-                                </div>
+                                <RestaurantCard
+                                    name='Khalid'
+                                    location='Jl. Setiabudi No. 20, Jakarta Selatan'
+                                    image='/images/login-avatar.svg'
+                                    destinationTags={['Gluten-Free Options', 'Vegetarian Friendly', 'Great Atmosphere']}
+                                    userTags={userTags}
+                                />
                             </div>
                         </Drawer.Content>
                     </Drawer.Portal>
