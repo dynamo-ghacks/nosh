@@ -39,7 +39,6 @@ export function SearchDestinationDrawer({
         if (status === google.maps.places.PlacesServiceStatus.OK) {
           if (!predictions) return;
 
-          console.log("predictions", predictions);
           const results = predictions.slice(0, 5).map((place) => ({
             name: place.structured_formatting.main_text,
             address: place.structured_formatting.secondary_text,
@@ -62,7 +61,6 @@ export function SearchDestinationDrawer({
 
     service.textSearch(request, (results, status) => {
       if (status === google.maps.places.PlacesServiceStatus.OK) {
-        console.log("results", results);
         if (!results) return;
 
         const place = results[0];

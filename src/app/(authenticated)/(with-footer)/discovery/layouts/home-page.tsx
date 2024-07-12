@@ -1,11 +1,23 @@
 "use client"
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Drawer } from "vaul";
-import { GoogleMap, Marker, useJsApiLoader } from '@react-google-maps/api';
+import { GoogleMap, InfoWindow, Marker, useJsApiLoader } from '@react-google-maps/api';
 import Chat from '../components/chat-components';
 import RestaurantCard from '../components/restaurant-cards';
 import { useRouter } from 'next/navigation';
 import executeRAGrequest from '../actions/rag';
+import debounce from 'lodash.debounce';
+
+type RestaurantType = {
+    id: string;
+    name: string;
+    location: string;
+    image: string;
+    destinationTags: string[];
+    userTags: string[];
+    latitude: number;
+    longitude: number;
+};
 
 const HomePage = (
     { userProfileUrl, username, userTags, recommendedRestaurant, nearestRestaurants }: {
@@ -25,20 +37,32 @@ const HomePage = (
     const [currentLocation, setCurrentLocation] = useState<google.maps.LatLngLiteral | null>(null);
     const [selectedLocation, setSelectedLocation] = useState<google.maps.LatLngLiteral | null>(null);
     const mapRef = useRef<google.maps.Map | null>(null);
+    const [hoveredRestaurant, setHoveredRestaurant] = useState<RestaurantType | null>(null);
     const [messages, setMessages] = useState
         <{ text: string, isUser: boolean, restaurants?: { name: string, location: string, image: string, destinationTags: string[], userTags: string[], id: string }[] }[]>
         ([
             { text: `Hi ${username}! How can I help you today?`, isUser: false },
         ]);
-    useEffect(() => {
-        console.log(messages);
-    }
-        , [messages]);
 
     const { isLoaded } = useJsApiLoader({
         id: 'google-map-script',
         googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || "",
     });
+
+    const [isInfoWindowOpen, setIsInfoWindowOpen] = useState(false);
+
+    const handleMarkerMouseOver = useCallback((restaurant: RestaurantType) => {
+        setHoveredRestaurant(restaurant);
+        setIsInfoWindowOpen(true);
+    }, []);
+
+    const handleInfoWindowMouseOver = useCallback(() => {
+        setIsInfoWindowOpen(true);
+    }, []);
+
+    const handleInfoWindowMouseOut = useCallback(() => {
+        setTimeout(() => setIsInfoWindowOpen(false), 300); // 300ms delay
+    }, []);
 
     useEffect(() => {
         if (navigator.geolocation) {
@@ -99,7 +123,6 @@ const HomePage = (
         }
     };
 
-    console.log(currentLocation)
 
     return (
         <div className="relative max-h-screen bg-gray-100 pb-20 h-full">
@@ -107,7 +130,7 @@ const HomePage = (
                 <div className="absolute inset-0">
                     {isLoaded ? (
                         <GoogleMap
-                            mapContainerStyle={{ width: '100%', height: '100%'}}
+                            mapContainerStyle={{ width: '100%', height: '100%' }}
                             center={currentLocation || { lat: -6.200000, lng: 106.816666 }}
                             zoom={15}
                             onLoad={onMapLoad}
@@ -115,13 +138,34 @@ const HomePage = (
                             onDragEnd={onMapDragEnd}
                         >
                             {nearestRestaurants.map((restaurant, index) => (
-                                <Marker
-                                    position={{ lat: restaurant.latitude, lng: restaurant.longitude }}
-                                    title={restaurant.name}
-                                    key={index}
-                                    onClick={() => { void router.push(`/destination/${restaurant.id}`) }}
-                                    // todo: hovering shows name
-                                />
+                                <React.Fragment key={index}>
+                                    <Marker
+                                        position={{ lat: restaurant.latitude, lng: restaurant.longitude }}
+                                        title={restaurant.name}
+                                        onClick={() => { void router.push(`/destination/${restaurant.id}`) }}
+                                        onMouseOver={() => handleMarkerMouseOver(restaurant)}
+                                    />
+                                    {hoveredRestaurant === restaurant && isInfoWindowOpen && (
+                                        <InfoWindow
+                                            position={{ lat: restaurant.latitude, lng: restaurant.longitude }}
+                                            onCloseClick={() => setIsInfoWindowOpen(false)}
+                                            options={{
+                                                pixelOffset: new window.google.maps.Size(0, -40),
+                                                disableAutoPan: true,
+                                                
+                                            }}
+                                        >
+                                            <div
+                                                className="bg-white p-2 rounded-md shadow-md"
+                                                onMouseOver={handleInfoWindowMouseOver}
+                                                onMouseOut={handleInfoWindowMouseOut}
+                                            >
+                                                <h3 className="font-bold text-sm text-black">{restaurant.name}</h3>
+                                                <p className="text-xs text-gray-600">{restaurant.location}</p>
+                                            </div>
+                                        </InfoWindow>
+                                    )}
+                                </React.Fragment>
                             ))}
                         </GoogleMap>
                     ) : (
