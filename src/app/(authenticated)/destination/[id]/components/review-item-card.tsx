@@ -18,7 +18,7 @@ export function ReviewItemCard({
   hooks?: ReturnType<typeof useDestinationDetail>;
 }) {
   return (
-    <Card className="border border-orange-500 rounded-2xl shadow-orange-50">
+    <Card className="border border-orange-500 rounded-2xl shadow-orange-50 mb-4">
       <div className="flex flex-row items-center justify-between">
         {review.user.image ? (
           <Avatar
