@@ -33,7 +33,7 @@ export function DestinationDetailPage(props: DestinationDetailPageProps) {
     >
       {props.detail.image ? (
         <div className="relative w-full h-64
-        bg-gray-300 rounded-lg overflow-hidden
+        bg-orange-200 rounded-lg overflow-hidden
         ">
           <Image
             src={props.detail.image}
