@@ -12,7 +12,7 @@ export function TagView({
   destTags: string[];
 }) {
   return (
-    <div className="flex flex-col flex-wrap gap-2">
+    <div className="flex flex-row flex-wrap gap-2 w-full">
       {filterTags(userTags, destTags).map((item) => (
         <Badge
           key={item.tag}

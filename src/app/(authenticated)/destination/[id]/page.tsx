@@ -66,16 +66,14 @@ export default async function Page({
         <p className="text-sm text-gray-500 dark:text-gray-400">
           {detail.description}
         </p>
-        <div className="text-sm flex flex-row items-center gap-2">
+        <div className="text-sm flex flex-row items-center gap-2 w-full">
           <FaMapPin />
           <p>{detail.address}</p>
         </div>
-        <div className="flex flex-row flex-wrap gap-2">
-          <TagView
-            userTags={session?.user?.tags ?? []}
-            destTags={detail?.tags ?? []}
-          />
-        </div>
+        <TagView
+          userTags={session?.user?.tags ?? []}
+          destTags={detail?.tags ?? []}
+        />
       </div>
       <div>
         <p className="mb-4">Map Location</p>
