@@ -5,7 +5,7 @@ import { GoogleMap, Marker, useJsApiLoader } from '@react-google-maps/api';
 import Chat from '../components/chat-components';
 
 const HomePage = (
-    {userProfileUrl, username}: {userProfileUrl: string, username: string}
+    { userProfileUrl, username }: { userProfileUrl: string, username: string }
 ) => {
     const [open, setOpen] = useState(false);
     const [currentLocation, setCurrentLocation] = useState<google.maps.LatLngLiteral | null>(null);
@@ -154,8 +154,8 @@ const HomePage = (
                                     { text: "I'm looking for a restaurant nearby.", isUser: true },
                                     { text: "Sure! Let me help you with that.", isUser: false },
                                     // Add more messages here
-                                ]} 
-                                userProfileUrl={userProfileUrl}
+                                ]}
+                                    userProfileUrl={userProfileUrl}
                                 />
 
                                 {/* Search input */}
@@ -165,7 +165,7 @@ const HomePage = (
                                         placeholder="Write your answer..."
                                         className="w-full p-2 pr-10 rounded-md border border-orange-300 pl-4 bg-orange-50"
                                     />
-                                    <svg className="w-6 h-6 text-gray-400 absolute right-3 top-2" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+                                    <svg className="w-6 h-6 text-gray-400 absolute right-3 top-2" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none" /><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z" /></svg>
                                 </div>
 
                                 {/* Recommended section */}
@@ -174,6 +174,10 @@ const HomePage = (
                                     <div className="h-24 bg-gray-300"></div>
                                     <div className="p-4">
                                         <h4 className="text-xl font-bold text-white mb-2">Khalid</h4>
+                                        <span>
+
+                                            <p className="text-white text-sm mb-2">Jl. Setiabudi No. 20, Jakarta Selatan</p>
+                                        </span>
                                         <ul className="text-white">
                                             <li className="flex items-center">
                                                 <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
