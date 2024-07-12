@@ -5,6 +5,7 @@ import { GoogleMap, Marker, useJsApiLoader } from '@react-google-maps/api';
 import Chat from '../components/chat-components';
 import RestaurantCard from '../components/restaurant-cards';
 import { useRouter } from 'next/navigation';
+import executeRAGrequest from '../actions/rag';
 
 const HomePage = (
     { userProfileUrl, username, userTags, recommendedRestaurant, nearestRestaurants }: {
@@ -14,7 +15,7 @@ const HomePage = (
         },
         nearestRestaurants: {
             id: string, name: string, location: string, image: string, destinationTags: string[], userTags: string[], isHighlighted?: boolean,
-        }[] 
+        }[]
     }
 ) => {
     const [open, setOpen] = useState(false);
@@ -22,6 +23,15 @@ const HomePage = (
     const [selectedLocation, setSelectedLocation] = useState<google.maps.LatLngLiteral | null>(null);
     const mapRef = useRef<google.maps.Map | null>(null);
     const router = useRouter();
+    const [messages, setMessages] = useState
+        <{ text: string, isUser: boolean, restaurants?: { name: string, location: string, image: string, destinationTags: string[], userTags: string[], id: string }[] }[]>
+        ([
+            { text: `Hi ${username}! How can I help you today?`, isUser: false },
+        ]);
+    useEffect(() => {
+        console.log(messages);
+    }
+        , [messages]);
 
     const { isLoaded } = useJsApiLoader({
         id: 'google-map-script',
@@ -123,7 +133,7 @@ const HomePage = (
             <div className="relative z-10 flex flex-col min-h-screen text-black">
                 <div className="p-4">
                     <button className="p-2 rounded-full bg-white shadow z-50"
-                    onClick={() => router.back()}
+                        onClick={() => router.back()}
                     >
                         <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
@@ -157,9 +167,7 @@ const HomePage = (
 
                                 <h2 className="text-xl font-semibold mb-6 text-center mt-6">Discovery</h2>
 
-                                <Chat messages={[
-                                    { text: `Hi ${username}! How can I help you today?`, isUser: false },
-                                ]}
+                                <Chat messages={messages}
                                     userProfileUrl={userProfileUrl}
                                     userTags={userTags}
                                 />
@@ -169,6 +177,31 @@ const HomePage = (
                                         type="text"
                                         placeholder="Write your answer..."
                                         className="w-full p-2 pr-10 rounded-md border border-orange-300 pl-4 bg-orange-50"
+                                        onKeyDown={(e) => {
+                                            if (e.key === "Enter") {
+                                                const userMessage = { text: e.currentTarget.value, isUser: true };
+                                                setMessages(prevMessages => [...prevMessages, userMessage]);
+                                                executeRAGrequest(e.currentTarget.value).then((response) => {
+                                                    setMessages(prevMessages => [
+                                                        ...prevMessages,
+                                                        {
+                                                            text: response.text,
+                                                            isUser: false,
+                                                            restaurants: response.destinationCited.map((destination) => ({
+                                                                name: destination.name,
+                                                                location: destination.address,
+                                                                image: destination.image || "/images/restaurant-sign.png",
+                                                                destinationTags: destination.tags,
+                                                                userTags: userTags,
+                                                                id: destination.id
+                                                            }))
+                                                        }
+                                                    ]);
+
+                                                });
+                                                e.currentTarget.value = "";
+                                            }
+                                        }}
                                     />
                                     <svg className="w-6 h-6 text-gray-400 absolute right-3 top-2" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none" /><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z" /></svg>
                                 </div>
