@@ -10,6 +10,7 @@ import { stringAvatar } from "@/utils/string-avatar";
 import { addReview } from "../../actions/destination.action";
 import { CustomInput } from "@/components/form/custom-input";
 import { CustomTextarea } from "@/components/form/custom-textarea";
+import { CustomTagSelect } from "@/components/form/custom-tag-select";
 
 export function ReviewFormModal({
   showModal,
@@ -34,11 +35,9 @@ export function ReviewFormModal({
   };
   onSubmit?: (data: ReviewFormData) => void;
 }) {
-  const [tagOptions, setTagOptions] = useState<string[]>(tags);
   const [selectedTags, setSelectedTags] = useState<string[]>(
     defaultValues?.tags ?? []
   );
-  const [inputValue, setInputValue] = useState("");
 
   const { control, handleSubmit, reset } = useForm<ReviewFormData>({
     resolver: zodResolver(reviewSchema),
@@ -48,23 +47,6 @@ export function ReviewFormModal({
       tags: [],
     },
   });
-
-  const handleTagChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const value = event.target.value;
-    setInputValue(value);
-  };
-
-  const handleTagSelect = (tag: string) => {
-    if (!selectedTags.find((t) => t === tag)) {
-      setSelectedTags([...selectedTags, tag]);
-    }
-    setInputValue("");
-  };
-
-  const handleTagRemove = (tag: string) => {
-    setSelectedTags(selectedTags.filter((t) => t !== tag));
-    setTagOptions([...tagOptions, tag]);
-  };
 
   const _onSubmit: SubmitHandler<ReviewFormData> = async (data) => {
     try {
@@ -126,50 +108,10 @@ export function ReviewFormModal({
               control={control}
               placeholder="Leave a comment..."
             />
-            <div className="relative">
-              <input
-                type="text"
-                placeholder="Search tags..."
-                className="block w-full border disabled:cursor-not-allowed disabled:opacity-50 border-orange-500 bg-orange-50 text-gray-900 focus:border-orange-500 focus:ring-orange-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-orange-500 dark:focus:ring-orange-500 p-2.5 text-sm rounded-lg"
-                value={inputValue}
-                onChange={handleTagChange}
-                disabled={selectedTags.length === 7}
-              />
-              {inputValue && selectedTags.length < 7 && (
-                <ul className=" absolute top-12 z-10 w-full bg-white text-black border rounded-lg shadow-sm max-h-32 overflow-auto text-sm">
-                  {tagOptions.map((option) =>
-                    selectedTags.includes(option) ? (
-                      <></>
-                    ) : (
-                      <li
-                        key={option}
-                        className="p-2 hover:bg-orange-100 cursor-pointer"
-                        onClick={() => handleTagSelect(option)}
-                      >
-                        {option}
-                      </li>
-                    )
-                  )}
-                </ul>
-              )}
-            </div>
-            <div className="flex flex-wrap gap-2 mb-4">
-              {selectedTags.map((tag) => (
-                <span
-                  key={tag}
-                  className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-orange-100 text-orange-800"
-                >
-                  {tag}
-                  <button
-                    type="button"
-                    className="ml-2 text-orange-600 hover:text-orange-800"
-                    onClick={() => handleTagRemove(tag)}
-                  >
-                    &times;
-                  </button>
-                </span>
-              ))}
-            </div>
+            <CustomTagSelect
+              selectedTags={selectedTags}
+              setSelectedTags={setSelectedTags}
+            />
             <button
               className="w-full justify-center rounded-lg bg-orange-500 px-5 py-3 text-center text-lg font-medium text-white hover:bg-orange-800 focus:outline-none focus:ring-4 focus:ring-blue-300 dark:bg-orange-600 dark:hover:bg-orange-700 dark:focus:ring-orange-800 flex flex-row gap-2 items-center"
               type="submit"

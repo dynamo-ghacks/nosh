@@ -15,14 +15,14 @@ export default async function Page() {
   }
 
   // if (session?.user?.onboarding) {
-  //   redirect("/home");
+  //   redirect("/discovery");
   // }
 
   return (
     <div className="overflow-y-hidden relative h-full flex flex-col gap-4 min-h-screen bg-white p-6 py-10">
       <div className="flex flex-col items-start justify-start gap-4">
         <Link
-          href={"/auth/login"}
+          href={"/discovery"}
           className="text-gray-800 text-xl font-semibold text-left w-full"
         >
           <HiArrowLeft className="inline mr-2" />

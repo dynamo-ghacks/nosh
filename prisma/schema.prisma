@@ -97,7 +97,7 @@ model Destination {
   longitude   Float
   address     String
   tags        String[]
-  isVerified  Boolean
+  isVerified  Boolean  @default(false)
   image       String?
 
   Review Review[]
