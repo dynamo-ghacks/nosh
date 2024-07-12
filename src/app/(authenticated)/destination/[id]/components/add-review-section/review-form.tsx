@@ -18,8 +18,6 @@ export function ReviewFormModal({
   hooks: ReturnType<typeof useDestinationDetail>;
 }) {
   const { user, destination, modal } = hooks;
-  if (!user || !destination) return <></>;
-
   const [selectedTags, setSelectedTags] = useState<string[]>(
     modal.defaultValues?.tags ?? []
   );
@@ -43,6 +41,8 @@ export function ReviewFormModal({
       reset();
     }
   }, [modal.defaultValues]);
+
+  if (!user || !destination) return <></>;
 
   const _onSubmit: SubmitHandler<ReviewFormData> = async (data) => {
     try {

@@ -21,7 +21,7 @@ export function useGoogleMapAPI() {
         });
       }
     }
-  }, [isLoaded]);
+  }, [isLoaded, location]);
 
   return { isLoaded, location, setLocation };
 }
