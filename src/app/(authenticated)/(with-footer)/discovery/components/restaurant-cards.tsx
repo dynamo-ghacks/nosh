@@ -9,7 +9,7 @@ const RestaurantCard = ({ name, location, image, destinationTags, userTags, isHi
     return (
         <div className={`${isHighlighted ? 'bg-orange-100' : 'bg-white'
             } p-2
-        rounded-lg overflow-hidden shadow-md mb-6`}>
+        rounded-lg overflow-hidden shadow-md mb-4`}>
             <div className="relative h-48 rounded-lg m-2">
                 <Image
                     src={image}
@@ -37,7 +37,9 @@ const RestaurantCard = ({ name, location, image, destinationTags, userTags, isHi
                     />
                 </div>
                 <button className={`${isHighlighted ? 'bg-white text-orange-500' : 'border-orange-400 text-white'
-                    }bg-white rounded-md py-2 px-3 w-full mt-4 border-2`}
+                    }bg-white rounded-md py-2 px-3 w-full mt-4 border-2
+                    ${isHighlighted ? 'hover:bg-orange-400' : 'hover:bg-orange-100'}
+                    `}
                     onClick={() => router.push(viewDetailUrl)}
                 >
                     View Detail

@@ -24,7 +24,6 @@ const HomePage = (
     const [currentLocation, setCurrentLocation] = useState<google.maps.LatLngLiteral | null>(null);
     const [selectedLocation, setSelectedLocation] = useState<google.maps.LatLngLiteral | null>(null);
     const mapRef = useRef<google.maps.Map | null>(null);
-    const router = useRouter();
     const [messages, setMessages] = useState
         <{ text: string, isUser: boolean, restaurants?: { name: string, location: string, image: string, destinationTags: string[], userTags: string[], id: string }[] }[]>
         ([
@@ -138,7 +137,7 @@ const HomePage = (
                         {!open &&
                             <div className="bg-white rounded-t-3xl shadow-lg p-6 text-black cursor-pointer pb-24">
                                 <div className="mx-auto w-12 h-1.5 flex-shrink-0 rounded-full bg-zinc-300 mb-8" />
-                                <h2 className="text-xl font-semibold mb-6 text-center mt-6">Discovery</h2>
+                                <h2 className="text-2xl font-semibold mb-6 text-center mt-6">Discovery</h2>
                             </div>
                         }
                     </Drawer.Trigger>
