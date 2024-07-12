@@ -4,35 +4,45 @@ import React from "react";
 import InfiniteScroll from "react-infinite-scroll-component";
 import { getReviewByDestination } from "../actions/destination.action";
 import { ReviewItemCard } from "./review-item-card";
+import { DefaultUser } from "next-auth";
 
+interface Review {
+  id: string;
+  title: string;
+  body: string;
+  tags: string[];
+  user: {
+    id: string;
+    name: string | null;
+    image: string | null;
+    email: string | null;
+  };
+  createdAt: Date;
+  updatedAt: Date;
+}
 export function ReviewSection({
   destinationId,
-  userTags,
+  user,
   reviews,
   meta,
+  userReview,
 }: {
   destinationId: string;
-  userTags: string[];
-  reviews: {
-    id: string;
-    title: string;
-    body: string;
-    tags: string[];
-    user: {
-      id: string;
-      name: string | null;
-      image: string | null;
-    };
-    createdAt: Date;
-    updatedAt: Date;
-  }[];
+  user?:
+    | (DefaultUser & {
+        tags?: string[];
+      })
+    | null;
+  reviews: Review[];
   meta: {
     page: number;
     take: number;
     nextPage: number | null;
     count: number;
   };
+  userReview?: Review | null;
 }) {
+  const [_userReview, setUserReview] = React.useState(userReview ?? null);
   const [_reviews, setReviews] = React.useState(reviews ?? []);
   const [_meta, setMeta] = React.useState(
     meta ?? { page: 1, take: 10, nextPage: 2, count: 0 }
@@ -80,6 +90,7 @@ export function ReviewSection({
           nextPage: result.data?.meta.nextPage ?? null,
           count: result.data?.meta.count ?? 0,
         });
+        setUserReview(result.data?.userReview ?? null);
       }
     } catch (err) {}
   }
@@ -111,9 +122,28 @@ export function ReviewSection({
         height={"100svh"}
         className="hide-scrollbar flex flex-col gap-4"
       >
-        {_reviews.map((review, index) => (
-          <ReviewItemCard key={index} userTags={userTags} review={review} />
-        ))}
+        {_userReview && (
+          <ReviewItemCard
+            key={"user"}
+            userTags={user?.tags ?? []}
+            review={_userReview}
+            isUser
+            destinationId={destinationId}
+          />
+        )}
+        {_reviews.map((review, index) => {
+          if (review.user.email === user?.email) {
+            return <></>;
+          }
+          return (
+            <ReviewItemCard
+              key={index}
+              userTags={user?.tags ?? []}
+              review={review}
+              destinationId={destinationId}
+            />
+          );
+        })}
       </InfiniteScroll>
     </div>
   );

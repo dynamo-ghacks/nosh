@@ -1,8 +1,18 @@
 "use server";
 
+import { getServerSession } from "next-auth";
+
 export async function getDestination(id: string) {
   try {
-    const [result, reviewCount] = await Promise.all([
+    const session = await getServerSession();
+    if (!session?.user.email) {
+      return {
+        success: false,
+        message: "Unauthorized",
+      };
+    }
+
+    const [result, reviewCount, userReview] = await Promise.all([
       prisma.destination.findUnique({
         where: { id },
         select: {
@@ -19,6 +29,9 @@ export async function getDestination(id: string) {
           Review: {
             take: 10,
             skip: 0,
+            orderBy: {
+              updatedAt: "desc",
+            },
             select: {
               body: true,
               id: true,
@@ -29,6 +42,7 @@ export async function getDestination(id: string) {
                   id: true,
                   name: true,
                   image: true,
+                  email: true,
                 },
               },
               createdAt: true,
@@ -40,9 +54,31 @@ export async function getDestination(id: string) {
       prisma.review.count({
         where: { destinationId: id },
       }),
+      prisma.review.findFirst({
+        where: {
+          destinationId: id,
+          user: {
+            email: session?.user.email,
+          },
+        },
+        select: {
+          body: true,
+          id: true,
+          tags: true,
+          title: true,
+          user: {
+            select: {
+              id: true,
+              name: true,
+              image: true,
+              email: true,
+            },
+          },
+          createdAt: true,
+          updatedAt: true,
+        },
+      }),
     ]);
-
-    console.log(reviewCount);
 
     return {
       success: true,
@@ -60,6 +96,7 @@ export async function getDestination(id: string) {
             count: reviewCount,
           },
         },
+        userReview: userReview ?? null,
       },
     };
   } catch (err) {
@@ -77,7 +114,15 @@ export async function getReviewByDestination(
   take: number
 ) {
   try {
-    const [result, reviewCount] = await Promise.all([
+    const session = await getServerSession();
+    if (!session?.user.email) {
+      return {
+        success: false,
+        message: "Unauthorized",
+      };
+    }
+
+    const [result, reviewCount, userReview] = await Promise.all([
       prisma.review.findMany({
         where: { destinationId },
         take,
@@ -92,14 +137,42 @@ export async function getReviewByDestination(
               id: true,
               name: true,
               image: true,
+              email: true,
             },
           },
           createdAt: true,
           updatedAt: true,
         },
+        orderBy: {
+          updatedAt: "desc",
+        },
       }),
       prisma.review.count({
         where: { destinationId },
+      }),
+      prisma.review.findFirst({
+        where: {
+          destinationId: destinationId,
+          user: {
+            email: session?.user.email,
+          },
+        },
+        select: {
+          body: true,
+          id: true,
+          tags: true,
+          title: true,
+          user: {
+            select: {
+              id: true,
+              name: true,
+              image: true,
+              email: true,
+            },
+          },
+          createdAt: true,
+          updatedAt: true,
+        },
       }),
     ]);
 
@@ -114,7 +187,82 @@ export async function getReviewByDestination(
           nextPage: result.length >= take ? page + 1 : null,
           count: reviewCount ?? 0,
         },
+        userReview: userReview ?? null,
       },
+    };
+  } catch (err) {
+    console.error(err);
+    return {
+      success: false,
+      message: "Internal server error",
+    };
+  }
+}
+
+export async function addReview(
+  email: string,
+  destinationId: string,
+  data: {
+    body: string;
+    tags: string[];
+    title: string;
+  }
+) {
+  try {
+    const check = await prisma.review.findFirst({
+      where: {
+        destinationId,
+        user: {
+          email,
+        },
+      },
+      select: {
+        id: true,
+      },
+    });
+
+    let result;
+    if (check) {
+      result = await prisma.review.update({
+        where: {
+          id: check.id,
+        },
+        data: {
+          ...data,
+          destination: {
+            connect: {
+              id: destinationId,
+            },
+          },
+          user: {
+            connect: {
+              email,
+            },
+          },
+        },
+      });
+    } else {
+      result = await prisma.review.create({
+        data: {
+          ...data,
+          destination: {
+            connect: {
+              id: destinationId,
+            },
+          },
+          user: {
+            connect: {
+              email,
+            },
+          },
+        },
+      });
+    }
+
+    return {
+      success: true,
+      message: "Success",
+      data: result,
     };
   } catch (err) {
     console.error(err);

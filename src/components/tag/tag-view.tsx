@@ -11,18 +11,22 @@ export function TagView({
   userTags: string[];
   destTags: string[];
 }) {
-  return filterTags(userTags, destTags).map((item) => (
-    <Badge
-      key={item.tag}
-      color={"success"}
-      className={
-        !item.highlight
-          ? "px-4 w-fit flex-grow-0 border border-orange-300 bg-transparent text-orange-500"
-          : "px-4 w-fit flex-grow-0"
-      }
-      icon={item.highlight ? FaCheck : LuCircleDashed}
-    >
-      {item.highlight ? item.tag : `${item.tag}`}
-    </Badge>
-  ));
+  return (
+    <div className="flex flex-col flex-wrap gap-2">
+      {filterTags(userTags, destTags).map((item) => (
+        <Badge
+          key={item.tag}
+          color={"success"}
+          className={
+            !item.highlight
+              ? "px-4 w-fit flex-grow-0 border border-orange-300 bg-transparent text-orange-500"
+              : "px-4 w-fit flex-grow-0"
+          }
+          icon={item.highlight ? FaCheck : LuCircleDashed}
+        >
+          {item.highlight ? item.tag : `${item.tag}`}
+        </Badge>
+      ))}
+    </div>
+  );
 }

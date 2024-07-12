@@ -1,12 +1,16 @@
-import React from "react";
-import { Avatar } from "flowbite-react";
+import React, { useState } from "react";
+import { Avatar, Card } from "flowbite-react";
 import { stringAvatar } from "../../../../../utils/string-avatar";
 import { format } from "date-fns";
 import { TagView } from "../../../../../components/tag/tag-view";
+import { ReviewFormModal } from "./add-review-section/review-form";
 
 export function ReviewItemCard({
   userTags,
   review,
+  destinationId,
+  isUser = false,
+  setUserReview = () => {},
 }: {
   userTags: string[];
   review: {
@@ -22,9 +26,14 @@ export function ReviewItemCard({
     createdAt: Date;
     updatedAt: Date;
   };
+  isUser?: boolean;
+  destinationId: string;
+  setUserReview?: (review: any) => void;
 }) {
+  const [showModal, setShowModal] = useState(false);
+
   return (
-    <div className="border border-orange-500 p-4 flex flex-col gap-4 rounded-2xl">
+    <Card className="border border-orange-500 rounded-2xl shadow-orange-50">
       <div className="flex flex-row items-center justify-between">
         {review.user.image ? (
           <Avatar
@@ -39,7 +48,7 @@ export function ReviewItemCard({
             {...stringAvatar(review.user.name ?? "")}
           />
         )}
-        <p className="text-sm w-full line-clamp-1 text-ellipsis mx-2">
+        <p className="font-semibold text-sm w-full line-clamp-1 text-ellipsis mx-2">
           {review.user.name}
         </p>
         <p className="text-sm text-gray-500 flex-shrink-0">
@@ -49,6 +58,27 @@ export function ReviewItemCard({
       </div>
       <div>{<TagView userTags={userTags} destTags={review.tags} />}</div>
       <p className="">{review.body}</p>
-    </div>
+      {isUser && (
+        <>
+          <div className="flex flex-row justify-end gap-2">
+            <button
+              onClick={() => setShowModal(true)}
+              className="px-2 h-10 rounded-lg min-w-20 bg-orange-100 text-orange-500 hover:text-orange-800 focus:outline-none"
+            >
+              Edit
+            </button>
+          </div>
+          {isUser && (
+            <ReviewFormModal
+              showModal={showModal}
+              setShowModal={setShowModal}
+              destinationId={destinationId}
+              user={review.user}
+              defaultValues={review}
+            />
+          )}
+        </>
+      )}
+    </Card>
   );
 }
