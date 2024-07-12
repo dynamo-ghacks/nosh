@@ -5,7 +5,7 @@ import Link from "next/link";
 
 export function Footer() {
   return (
-    <div className="w-full bg-orange-500 flex justify-around items-center pt-4 pb-2 fixed bottom-0 left-0 right-0 max-w-md mx-auto rounded-t-3xl z-50">
+    <footer className="w-full bg-orange-500 flex justify-around items-center pt-4 pb-2 fixed bottom-0 left-0 right-0 max-w-md mx-auto rounded-t-3xl z-50">
       <Link
         href="/discovery"
         className="w-20 flex flex-col items-center text-white"
@@ -32,6 +32,6 @@ export function Footer() {
         <FaRegUser />
         <span className="text-sm mt-2">Profile</span>
       </Link>
-    </div>
+    </footer>
   );
 }

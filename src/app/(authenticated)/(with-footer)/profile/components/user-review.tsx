@@ -24,7 +24,7 @@ const UserReview = ({
     <div className="bg-pink-50 p-6 rounded-xl text-black">
       <div className="flex justify-between items-start mb-2">
         <h2 className="text-xl font-bold">
-          {restaurantName.length > 40
+          {restaurantName && restaurantName.length > 40
             ? restaurantName.substring(0, 40) + "..."
             : restaurantName}
         </h2>
@@ -53,7 +53,9 @@ const UserReview = ({
           />
         </svg>
         <span>
-        {location.length > 80 ? location.substring(0, 80) + "..." : location}
+          {location && location.length > 80
+            ? location.substring(0, 80) + "..."
+            : location}
         </span>
       </div>
 
