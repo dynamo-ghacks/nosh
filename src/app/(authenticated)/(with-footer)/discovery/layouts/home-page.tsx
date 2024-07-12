@@ -20,6 +20,7 @@ const HomePage = (
         }[]
     }
 ) => {
+    const router = useRouter()
     const [open, setOpen] = useState(false);
     const [currentLocation, setCurrentLocation] = useState<google.maps.LatLngLiteral | null>(null);
     const [selectedLocation, setSelectedLocation] = useState<google.maps.LatLngLiteral | null>(null);
@@ -101,12 +102,12 @@ const HomePage = (
     console.log(currentLocation)
 
     return (
-        <div className="relative max-h-screen bg-gray-100 pb-20">
+        <div className="relative max-h-screen bg-gray-100 pb-20 h-full">
             <div className="absolute inset-0 bg-blue-100">
                 <div className="absolute inset-0">
                     {isLoaded ? (
                         <GoogleMap
-                            mapContainerStyle={{ width: '100%', height: '100%', }}
+                            mapContainerStyle={{ width: '100%', height: '100%'}}
                             center={currentLocation || { lat: -6.200000, lng: 106.816666 }}
                             zoom={15}
                             onLoad={onMapLoad}
@@ -115,9 +116,11 @@ const HomePage = (
                         >
                             {nearestRestaurants.map((restaurant, index) => (
                                 <Marker
-                                    key={index}
                                     position={{ lat: restaurant.latitude, lng: restaurant.longitude }}
                                     title={restaurant.name}
+                                    key={index}
+                                    onClick={() => { void router.push(`/destination/${restaurant.id}`) }}
+                                    // todo: hovering shows name
                                 />
                             ))}
                         </GoogleMap>
@@ -127,8 +130,8 @@ const HomePage = (
                 </div>
             </div>
 
-            <div className="relative z-10 flex flex-col min-h-screen text-black">
-                <div className="flex-grow"></div>
+            <div className="absolute inset-0 bottom-0 top-auto w-full h-fit z-0 text-black">
+                {/* <div className="absolute bottom-0 -z-10"></div> */}
 
                 <Drawer.Root open={open} onClose={
                     () => setOpen(false)

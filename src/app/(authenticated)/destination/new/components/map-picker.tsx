@@ -158,7 +158,6 @@ export function MapPicker({
           <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-orange-500 text-6xl">
             <FaMapMarkerAlt />
           </div>
-          <Marker position={center} />
         </GoogleMap>
       </div>
       <div className="max-h-[240px] text-black fixed bottom-0 left-0 right-0 bg-transparent px-6 pb-6 shadow-md max-w-md mx-auto">
