@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import { Poppins } from "next/font/google";
 import "./globals.css";
-import { Flowbite } from "flowbite-react";
-import { customTheme } from "@/themes";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const inter = Poppins({
   subsets: ["latin"],
@@ -11,7 +11,8 @@ const inter = Poppins({
 
 export const metadata: Metadata = {
   title: "Nosh by Team Dynamo",
-  description: "Nosh is an online platform for sharing food hypersensitivity-friendly dining spots.",
+  description:
+    "Nosh is an online platform for sharing food hypersensitivity-friendly dining spots.",
 };
 
 export default function RootLayout({

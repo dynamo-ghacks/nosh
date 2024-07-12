@@ -16,6 +16,7 @@ export function useCreateDestination() {
   } | null>(null);
   const mapRef = useRef<google.maps.Map | null>(null);
   const { isLoaded, location } = useGoogleMapAPI();
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   return {
     isLoaded,
@@ -25,5 +26,7 @@ export function useCreateDestination() {
     selectedPlace,
     setSelectedPlace,
     mapRef,
+    isSubmitting,
+    setIsSubmitting,
   };
 }

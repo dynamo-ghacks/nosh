@@ -16,27 +16,33 @@ import { GoogleMap, Marker } from "@react-google-maps/api";
 import { useCreateDestination } from "../hooks/useCreateDestionation";
 import { MapPicker } from "./map-picker";
 import { useRouter } from "next/navigation";
+import { ToastContainer, toast } from "react-toastify";
+import { CustomButton } from "@/components/ui/custom-button";
 
 export function NewDestinationForm() {
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const router = useRouter();
   const hook = useCreateDestination();
   const { view, setView, isLoaded, location, selectedPlace } = hook;
-  const { control, handleSubmit, reset, setValue } = useForm<CreateDestination>(
-    {
-      resolver: zodResolver(createDestinationSchema),
-      defaultValues: {
-        name: "",
-        description: "",
-        address: "",
-        latitude: 0,
-        longitude: 0,
-        tags: [],
-        isVerified: false,
-        image: "",
-      },
-    }
-  );
+  const {
+    control,
+    handleSubmit,
+    reset,
+    setValue,
+    formState: { isValid },
+  } = useForm<CreateDestination>({
+    resolver: zodResolver(createDestinationSchema),
+    defaultValues: {
+      name: "",
+      description: "",
+      address: "",
+      latitude: 0,
+      longitude: 0,
+      tags: [],
+      isVerified: false,
+      image: "",
+    },
+  });
 
   useEffect(() => {
     if (selectedPlace) {
@@ -54,12 +60,21 @@ export function NewDestinationForm() {
 
   const _onSubmit: SubmitHandler<CreateDestination> = async (data) => {
     try {
+      hook.setIsSubmitting(true);
       const result = await createDestination(data);
       reset();
+      hook.setIsSubmitting(false);
       if (result.success && result?.data?.id) {
         router.replace(`/destination/${result.data.id}`);
       }
-    } catch (err) {}
+
+      if (!result.success) {
+        toast.error(result.message);
+      }
+    } catch (err) {
+    } finally {
+      hook.setIsSubmitting(false);
+    }
   };
   return (
     <div>
@@ -143,12 +158,11 @@ export function NewDestinationForm() {
               }}
             />
           </FormFieldWrapper>
-          <button
-            className="w-full justify-center rounded-lg bg-orange-500 px-5 py-3 text-center text-lg font-medium text-white hover:bg-orange-800 focus:outline-none focus:ring-4 focus:ring-blue-300 dark:bg-orange-600 dark:hover:bg-orange-700 dark:focus:ring-orange-800 flex flex-row gap-2 items-center"
-            type="submit"
-          >
-            <span>Submit</span>
-          </button>
+          <CustomButton
+            label="Submit"
+            loading={hook.isSubmitting}
+            disabled={hook.isSubmitting || !isValid}
+          />
         </form>
       )}
 
@@ -162,6 +176,7 @@ export function NewDestinationForm() {
           hook={hook}
         />
       )}
+      <ToastContainer position="top-center" />
     </div>
   );
 }
